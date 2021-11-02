@@ -1,1 +1,1 @@
-# aa228_final_project
+# AA228: Decision Making Under Uncertainty -- Final Project
