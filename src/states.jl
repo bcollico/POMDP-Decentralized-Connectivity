@@ -44,7 +44,7 @@ Inputs:
     s       The probed state
 
 Outputs:
-    ind     The state index
+    The state index
 """
 function POMDPs.stateindex(pomdp::ConnectPOMDP, s::Array{CartesianIndices})
     # The Grid Size (i.e., n_grid_size x n_grid_size)
