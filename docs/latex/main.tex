@@ -1,0 +1,108 @@
+\documentclass[conf]{new-aiaa}
+%\documentclass[journal]{new-aiaa} for journal papers
+\usepackage[utf8]{inputenc}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage[version=4]{mhchem}
+\usepackage{siunitx}
+\usepackage{longtable,tabularx}
+\setlength\LTleft{0pt} 
+
+% Author defined
+\usepackage{mathrsfs} % Script Letters
+\usepackage{todonotes}
+\usepackage{bm} % bold math symbols in italics
+
+\newcommand{\A }{\boldsymbol{A}}
+\newcommand{\D}{\mathscr{D}}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\Observation}{\boldsymbol{O}}
+\newcommand{\Prob}{\mathscr{P}}
+\newcommand{\Sstate}{\mathcal{S}}
+
+\newcommand{\ucontrol}{\boldsymbol{u}}
+\newcommand{\verr}{\boldsymbol{v}}
+\newcommand{\w}{\boldsymbol{w}}
+\newcommand{\x}{\boldsymbol{x}}
+\newcommand{\z}{\boldsymbol{z}}
+
+\title{Decentralized Connectivity Maintenance for Multi-Robot Systems Under Motion, Sensing, and Trust Uncertainty using a Dec-POMDP}
+
+\author{Bradley Collicott\footnote{Ph.D. Student, Aeronautics and Astronautics.}}
+\author{Daniel Neamati*}
+\author{Alexandros Tzikas*}
+\affil{Stanford University, Stanford, CA, 94305, United States}
+
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This project aims to use Decentralized Partially-Observable Markov Decision Processes (Dec-POMDP) for a multi-robot system in order to determine a control policy for each agent that maintains the system's connectivity. The system is subject to uncertainties in motion, sensing, and agent-trustworthiness, and the determined control policies must ensure both the system's connectivity and collision avoidance between the agents and the environment. After a centralized offline learning period, the learned decision policies will be applied in a decentralized online multi-robot simulation.
+\end{abstract}
+
+\section{Nomenclature}
+
+{\renewcommand\arraystretch{1.0}
+\noindent\begin{longtable*}{@{}l @{\quad=\quad} l@{}}
+$A$ & Adjacency matrix of the connectivity graph \\
+$a_{ij}$ & Edge weight between agents $i$, $j$ of the connectivity graph \\
+$\A$ & Joint action space \\
+$B$ & Control input matrix \\
+$D$ & Degree matrix of the connectivity graph  \\
+$\D$  & Set of $n$ agents \\
+$h$ & Planning horizon of the problem\\
+$I$ & Initial state distribution \\ 
+$L$ & Laplacian matrix of the connectivity graph \\
+$\lambda_k$ & $k$-th ordered (least to greatest) eigenvalues of the graph Laplacian matrix \\
+$\lambda_2$ & The algebraic connectivity of the connectivity graph \\
+$\N$ & Gaussian distribution \\
+$n$ & Number of agents \\
+$\Observation$   & Joint observation space \\
+$O$ & Observation probability function (specifies the probabilities $p\left( \boldsymbol{o}|\boldsymbol{a}, \boldsymbol{s}\right)$)\\
+$\Prob$ & Probability distribution \\
+$R$ & System's shared immediate reward function \\
+$\Sstate$ & State space of environment \\
+$T$ & Transition probability function (specifies the probabilities $p\left(\boldsymbol{s'}|\boldsymbol{s}, \boldsymbol{a}\right)$) \\
+$\Delta t$ & Discrete time step \\
+$\ucontrol_{i, t}$ & Control vector of robot $i$ at time step $t$ \\
+$\verr_{i, t}$ & Measurement error on robot $i$ at time step $t$ \\
+$\w_{i, t}$ & Motion error on robot $i$ at time step $t$ \\
+$\x_{i, t}$ & State vector of robot $i$ at time step $t$ \\
+$\z_{i, t}$ & Observation vector of robot $i$ at time step $t$
+\end{longtable*}}
+
+
+\section{Proposal}
+Multi-robot systems have attracted growing interest, due to their multi-faceted applications, including search and rescue and target-tracking. Communication between agents in a multi-robot system can enable coordination and thus the execution of complex tasks. A major challenge in designing decentralized algorithms for connectivity maintenance in a multi-robot system is accounting for robot motion, sensing, and trust uncertainty. In other words, there is noise uncertainty in the true position of the robot (motion uncertainty) and in the measurements of each robot (sensing uncertainty). Additionally, a multi-robot team may operate in an adversarial or otherwise harsh environment with some likelihood of sensor failure or malicious intervention occurring. Each agent in the system must be robust to potential spurious actions of their robot peers, and as such, a degree of trust must be learned to either incorporate or discard information received from nearby peers.  
+
+To account for motion and sensing uncertainties,~\cite{Shetty2021} presents a decentralized algorithm that uses a weighted graph to account for uncertainty in robot position and a decentralized gradient-based controller to maintain algebraic connectivity of the weighted graph representing the system above a defined threshold. In~\cite{Shetty2021}, eq.(12) however, the authors select specific functions to account for the uncertainty in their definition of the edge weights of the weighted graph. These functions are hyperparameters of the system. In addition, the work in~\cite{Shetty2021} is limited to the case of a single integrator model. Our goal is to provide a framework to calculate the optimal control policies for robots that is applicable to systems with different dynamics models, without using a restricted representation of uncertainty, as in~\cite{Shetty2021}, while also enabling the agents to decide upon the trustworthiness of received information. To the authors' knowledge, the reformulation of the problem with reinforcement learning and accounting for uncertainty in agent-trustworthiness would each be a novel extension to the work in~\cite{Shetty2021}.
+
+In this proposed work, we transform the problem in~\cite{Shetty2021} with the trustworthiness extension into a decentralized partially observable Markov decision process (Dec-POMDP). More explicitly, recall that a Dec-POMDP is defined as a tuple $\langle \D, \Sstate, \A, T, R, \Observation, O, h, I \rangle$ \cite{Oliehoek2012}. We can formulate the decentralized connectivity maintenance problem under motion, sensing, and trust uncertainty as a Dec-POMDP through the following conversion:
+\begin{enumerate}
+    \item The set $\D$ of agents represents the robots.
+    \item The state space $\Sstate$ of the environment is discretized onto a 3D grid. A state $\boldsymbol{s}$ contains the positions of the robots.
+    \item The joint action space $\A$ contains all tuples $\left(\boldsymbol{a_1}, \dots, \boldsymbol{a_n} \right)$, where each $\boldsymbol{a_i}$ is the action of robot $i$, chosen from a discrete set. For each robot $i$, $\boldsymbol{a_i}$ contains its necessary control input to preserve connectivity and the decisions about trusting its incoming pieces of information.
+    \item The transition probability function $T: P(\boldsymbol{s'}|\boldsymbol{s}, \boldsymbol{a})$ can be calculated through the motion models of the agents. Following \cite{Shetty2021}, we can consider a discrete-time single-integrator motion model. However, our goal is that the Dec-POMDP formulation will be robust to different dynamics models:
+\begin{equation}
+    \x_{i, t} = \x_{i, t - 1} + B \ucontrol_{i, t - 1} + \w_{i, t}
+\end{equation}
+Where the control matrix is $B =  (\Delta t) I$ and the error is $w_{i, t} \sim \N(0, Q_{i, t})$.
+    \item The reward function $R$ is a function primarily of the algebraic connectivity $\lambda_2$ of the system. This is the second smallest eigenvalue of the Laplacian Matrix $L = D - A$.
+    \item The joint observation space $\Observation $ contains all tuples $\left(\boldsymbol{o_1}, \dots, \boldsymbol{o_n} \right)$, where each $\boldsymbol{o_i}$ is the independent observation of robot $i$, chosen from a discrete set. It contains measurements conducted by robot $i$ and received information at $i$.
+    \item The observation probability function $O: P(\boldsymbol{o}|\boldsymbol{s},\boldsymbol{a})$ can be extracted by using the motion model, along with the sensing model per agent. Following \cite{Shetty2021}, we use
+\begin{equation}
+    \z_{i, t} = \x_{i,t} + \verr_{i, t}
+\end{equation}
+where the error is $v_{i, t} \sim \N(0, R_{i, t})$ for the sensing model.
+    \item The time horizon $h$ remains unchanged.
+    \item The initial state distribution $I$ also remains unchanged.
+\end{enumerate}
+
+Multi-robot systems have many applications and connectivity maintenance is an important factor to consider in such systems in order to enable coordination and communication. In this project, we aim to maintain connectivity by determining control policies using reinforcement learning for each agent under various sources of uncertainty.
+
+\bibliography{sample}
+
+\end{document}
