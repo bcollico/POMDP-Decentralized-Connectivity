@@ -23,7 +23,7 @@ function compute_connectivity(s_tot::Array, pomdp::ConnectPOMDP)
     laplacian_matrix = zeros((n,n))
 
     # initialize truncated normal distribution
-    trunc_Normal = TruncatedNormal(0, pomdp.σ_transition, -pomdp.connect_thresh, pomdp.connect_thresh)
+    trunc_normal = pomdp.connectivity_dist
 
     for i in 1:n
         for j in 1:n
@@ -33,7 +33,7 @@ function compute_connectivity(s_tot::Array, pomdp::ConnectPOMDP)
             if j==i
                 adjacency_matrix[i,j] = dist
             else
-                adjacency_matrix[i,j] = pdf(trunc_Normal, dist)
+                adjacency_matrix[i,j] = pdf(trunc_normal, dist)
             end
         end
 

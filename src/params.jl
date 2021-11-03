@@ -69,8 +69,7 @@ struct ConnectPOMDP <: POMDP{Array{CartesianIndex}, Array{Symbol}, Array{Cartesi
     σ_motion::Float64 # Standard deviation of Gaussian process     noise
 
     # Connectivity Probability Distribution (Truncated Gaussian)
-    σ_connect::Float64  # Standard deviation
-    connect_thresh::Int # Maximum distance threshold for connectivity
+    connectivity_dist::Truncated
 
     # Transition probability distribution (Discrete Gaussian)
     p_transition_bins::Array{Float64} # binned probabilities sorted largest-to-smallest
@@ -83,12 +82,18 @@ struct ConnectPOMDP <: POMDP{Array{CartesianIndex}, Array{Symbol}, Array{Cartesi
 
     """Constructor for ConnectPOMDP based on ParamsStruct"""
     function ConnectPOMDP(params::ParamsStruct)
-
+        
+        # compute discrete Gaussian bins for transition function
         p_bins = compute_transition_function(params)
 
+        # computed truncated Gaussian distribution for connectivity
+        trunc_normal = truncated(Normal(0, params.σ_transition), 
+                                          -params.connect_thresh, 
+                                           params.connect_thresh)
+
         return new(params.num_agents, params.num_leaders, params.n_grid_size, 
-                   params.R_o, params.R_a, params.R_λ, params.σ_obs, 
-                   params.σ_motion, params.σ_connect, params.connect_thresh, p_bins, 
+                   params.R_o, params.R_a, params.R_λ, 
+                   params.σ_obs, params.σ_motion, trunc_normal, p_bins, 
                    params.object_collision_buffer, params.agent_collision_buffer, 
                    params.γ)
     end
