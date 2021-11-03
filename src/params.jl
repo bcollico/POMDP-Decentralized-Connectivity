@@ -50,7 +50,8 @@ mutable struct ParamsStruct
     end
 end
 
-struct ConnectPOMDP <: POMDP{Array{CartesianIndices}, Array{Symbol}, Array{CartesianIndices}}
+# Daniel Note: Updated the states and observations to Array{CartesianIndex}
+struct ConnectPOMDP <: POMDP{Array{CartesianIndex}, Array{Symbol}, Array{CartesianIndex}}
     # Problem Setup
     num_agents::Int
     num_leaders::Int

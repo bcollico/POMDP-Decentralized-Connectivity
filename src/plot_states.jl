@@ -2,7 +2,6 @@ using Plots
 using CategoricalArrays
 
 include("map_generation.jl")
-# include("states.jl")
 
 """
     get_base_grid(p::ParamsStruct)
