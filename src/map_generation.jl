@@ -1,4 +1,6 @@
 
+include("params.jl")
+
 # The objective of this file is to set the obstacles in the POMDP problem
 
 """
@@ -23,15 +25,19 @@ Inputs:
 Outputs:
     obstacle coordinates as a CartesianIndex
 """
-function gen_rand_obstacle(n_grid::Int, grid_dimension::Int = 2)
+function gen_rand_obstacle(n_grid_size::Int, grid_dimension::Int = 2)
 
     obstacle_coords = zeros(Int, grid_dimension)
 
     for d in 1:grid_dimension
-        obstacle_coords[d] = rand(1:n_grid)
+        obstacle_coords[d] = rand(1:n_grid_size)
     end
 
     return CartesianIndex(obstacle_coords...)
+end
+
+function gen_rand_obstacle(p::ParamsStruct)
+    gen_rand_obstacle(p.n_grid_size, p.grid_dimension)
 end
 
 """
@@ -47,12 +53,16 @@ Outputs:
     Array of obstacle coordinates as an Array{CartesianIndex}
 
 """
-function gen_multiple_rand_obstacles(n_obstacles::Int, n_grid::Int,
+function gen_multiple_rand_obstacles(n_obstacles::Int, n_grid_size::Int,
                                      grid_dimension::Int = 2)
     all_obstacles = []
     for _ in 1:n_obstacles
-        push!(all_obstacles, gen_rand_obstacle(n_grid, grid_dimension))
+        push!(all_obstacles, gen_rand_obstacle(n_grid_size, grid_dimension))
     end
 
     return all_obstacles
+end
+
+function gen_multiple_rand_obstacles(p::ParamsStruct)
+    gen_multiple_rand_obstacles(p.n_obstacles, p.n_grid_size, p.grid_dimension)
 end
