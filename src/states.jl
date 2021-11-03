@@ -79,5 +79,5 @@ function POMDPs.stateindex(pomdp::ConnectPOMDP, s::Array{CartesianIndex})
     outer_bot_num_dimension = Tuple([n_grid_size_flat for bot in 1:num_bots])
 
     # Output the unique number that describes that state array
-    return LinearIndices(outer_bot_num_dimension)bot_indices
+    return LinearIndices(outer_bot_num_dimension)[bot_indices]
 end
