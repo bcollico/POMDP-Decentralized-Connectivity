@@ -18,17 +18,17 @@ mutable struct ParamsStruct
     R_a::Int    # Negative reward for agent-agent    collision
     R_λ::Int    # Negative reward for loss of connectivity
 
-    # Motion and Sensing Uncertainty
+    # Sensing Uncertainty
     σ_obs::Float64    # Standard deviation of Gaussian measurement noise
-    σ_motion::Float64 # Standard deviation of Gaussian process     noise
+    b_obs::Float64    # Bin width of discrete Gaussian model
 
     # Connectivity Probability Distribution (Truncated Gaussian)
-    σ_connect::Float64  # Standard deviation
+    σ_connect::Float64  # Standard deviation;
     connect_thresh::Int # Maximum distance threshold for connectivity
 
     # Transition probability distribution (Discrete Gaussian)
-    σ_transition::Float64
-    transition_bin_width::Float64
+    σ_transition::Float64 # Standard deviation of Gaussian process noise
+    b_transition::Float64 # Bin width of discrete Gaussian model
 
     # Collision Buffer Distance (L-nfty Norm)
     object_collision_buffer::Int 
@@ -43,7 +43,7 @@ mutable struct ParamsStruct
         return new(1, 1, 10,        # Problem Setup
                   10, 2, 5,         # Map Parameters
                  -1e4, -1e4, -1e3,  # Rewards
-                  1e-10, 1e-10,         # Motion and Sensing Uncertainty
+                  1e-10, 1.0,       # Sensing Uncertainty
                   1.0, 2,           # Connectivity Probability Distribution
                   1.0, 1.0,         # Transition probability distribution
                   2, 2,             # Collision Buffer Distance
@@ -65,8 +65,7 @@ struct ConnectPOMDP <: POMDP{Array{CartesianIndex}, Array{Symbol}, Array{Cartesi
     R_λ::Int    # Negative reward for loss of connectivity
 
     # Motion and Sensing Uncertainty
-    σ_obs::Float64    # Standard deviation of Gaussian measurement noise
-    σ_motion::Float64 # Standard deviation of Gaussian process     noise
+    p_bins_observation::Array{Float64} # binned probabilities sorted largest-to-smallest
 
     # Connectivity Probability Distribution (Truncated Gaussian)
     connectivity_dist::Truncated
@@ -74,6 +73,7 @@ struct ConnectPOMDP <: POMDP{Array{CartesianIndex}, Array{Symbol}, Array{Cartesi
     # Transition probability distribution (Discrete Gaussian)
     p_bins_follower::Array{Float64} # binned probabilities sorted largest-to-smallest
     p_bins_leader::Array{Float64} # error-free transition function for leaders
+    sp_order_table::Array{Int} # Lookup table for states sorted by probability of transition
 
     # Collision Buffer Distance (L-nfty Norm)
     object_collision_buffer::Int 
@@ -85,31 +85,32 @@ struct ConnectPOMDP <: POMDP{Array{CartesianIndex}, Array{Symbol}, Array{Cartesi
     function ConnectPOMDP(params::ParamsStruct)
         
         # compute discrete Gaussian bins for transition function
-        p_bins_follower, p_bins_leader = compute_transition_function(params)
+        p_bins_follower, p_bins_leader = compute_discrete_gaussian(params.σ_transition, params.b_transition)
+        p_bins_observation, _ = compute_discrete_gaussian(params.σ_obs, params.b_obs)
 
         # computed truncated Gaussian distribution for connectivity
         trunc_normal = truncated(Normal(0, params.σ_transition), 
                                           -params.connect_thresh, 
                                            params.connect_thresh)
 
+        # compute lookup table for state transitions
+        sp_order_table = compute_sp_order_table()
+
         return new(params.num_agents, params.num_leaders, params.n_grid_size, 
                    params.R_o, params.R_a, params.R_λ, 
-                   params.σ_obs, params.σ_motion, trunc_normal, 
-                   p_bins_follower, p_bins_leader,
+                   p_bins_observation, trunc_normal, 
+                   p_bins_follower, p_bins_leader, sp_order_table,
                    params.object_collision_buffer, params.agent_collision_buffer, 
                    params.γ)
     end
 end
 
-function compute_transition_function(params::ParamsStruct)
+function compute_discrete_gaussian(σ::Float64, b::Float64)
     # TODO: Generalize to different numbers of actions
-    n_actions = params.grid_dimension^3 + 1
-        
-    σ_transition = params.σ_transition
-    b = params.transition_bin_width
+    n_actions = 9
     
     # Use continuous, zero-mean Gaussian distribution to form discrete bins
-    N = Distributions.Normal(0, σ_transition)
+    N = Distributions.Normal(0, σ)
 
     # compute the bin heights for the symmetric discrete gaussian
     p_bins = zeros(Float64, (n_actions))
@@ -129,4 +130,30 @@ function compute_transition_function(params::ParamsStruct)
 
     # ensure that probabilities sum to 1
     return normalize!(p_bins, 1), p_bins_leader
+end
+
+"""
+Compute lookup table of the ordering of state from highest chance of transition
+to lowest chance of transition. See transitions.jl for more information.
+
+Ordering for each action is stored as a column vector in sp_order_table
+"""
+function compute_sp_order_table()
+
+    n_actions = 9
+
+    sp_order_table = zeros(Int, (9,9))
+
+    for k = 1:9
+        if k < 9
+            sp_order_table[:, k] = k .+ [0, 1, -1, 2, -2, 3, -3, -4, (17-k)]
+            sp_order_table[sp_order_table[:,k] .<= 0, k] .+= 8
+            sp_order_table[sp_order_table[:,k] .>= 9, k] .-= 8
+        else
+            sp_order_table[:, k] = [9, 1, 2, 3, 4, 5, 6, 7, 8]
+        end
+        
+    end
+
+    return sp_order_table
 end
