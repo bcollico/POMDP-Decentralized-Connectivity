@@ -1,7 +1,6 @@
 using POMDPs
-using POMDPModelTools
 
-import("./params.jl")
+include("./params.jl")
 
 """
 
