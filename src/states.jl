@@ -34,7 +34,7 @@ function POMDPs.states(pomdp::ConnectPOMDP)
 end 
 
 """
-    POMDPs.stateindex(pomdp::ConnectPOMDP, s::Tuple{Int, Int})
+    POMDPs.stateindex(pomdp::ConnectPOMDP, s::Array{CartesianIndex})
 
 Map a state (x, y) to a linear index. This function inherets from the POMDPs
 stateindex funtion. 
@@ -46,7 +46,7 @@ Inputs:
 Outputs:
     The state index
 """
-function POMDPs.stateindex(pomdp::ConnectPOMDP, s::Array{CartesianIndices})
+function POMDPs.stateindex(pomdp::ConnectPOMDP, s::Array{CartesianIndex})
     # The Grid Size (i.e., n_grid_size x n_grid_size)
     n_grid_size = pomdp.n_grid_size
     # The total grid size is n_grid_size_flat = n_grid_size x n_grid_size
