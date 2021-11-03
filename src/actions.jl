@@ -22,13 +22,13 @@ function POMDPs.actions(pomdp::ConnectPOMDP)
     n_grid_size = pomdp.n_grid_size
 
     # Total Number of Decision-Raking Robots
-    num_agents = pomdp.num_agents
+    num_bots = pomdp.num_bots
 
     # Actions for a Single Agent
     a = [:east, :northeast, :north, :northwest,
          :west, :southwest, :south, :southeast, :stay]
 
-    return [a for k in 1:num_agents]
+    return [a for k in 1:num_bots]
 end
 
 """
@@ -47,10 +47,10 @@ function POMDPs.actionindex(pomdp::ConnectPOMDP, a::Array{Symbol})
     n_grid_size = pomdp.n_grid_size
 
     # Total Number of Decision-Raking Robots
-    num_agents = pomdp.num_agents
+    num_bots = pomdp.num_agents + pomdp.num_leaders
 
-    a_ind = zeros(Int,num_agents)
-    for k = 1:num_agents
+    a_ind = zeros(Int,num_bots)
+    for k = 1:num_bots
         if a[k] == :east;          a_ind[k] = 1
         elseif a[k] == :northeast; a_ind[k] = 2
         elseif a[k] == :north;     a_ind[k] = 3
