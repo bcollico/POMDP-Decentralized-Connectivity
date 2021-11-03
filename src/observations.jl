@@ -13,7 +13,7 @@ end
 """
 Return the discrete gaussian distribution of observations of each robot for each
 robot -- each robot has num_robots observation vectors consisting of a probability
-distribution over each robot's neighborhood of states
+distribution over each robots neighborhood of states
 
 input
     pomdp   The ConnectPOMDP struct
@@ -45,7 +45,7 @@ end
 Compute the vector of observation distributions for a single robot
 
 input
-    pomdp   The ConnectPOMDP struct\
+    pomdp   The ConnectPOMDP struct
     
     num_bots   Total number of robots
     
