@@ -3,8 +3,6 @@ using Plots
 include("map_generation.jl")
 # include("states.jl")
 
-gr()
-
 """
     get_base_grid(p::ParamsStruct)
 
@@ -72,13 +70,3 @@ end
 function add_bots_to_grid!(base_grid, s::Array{CartesianIndices}, p::ParamsStruct)
     add_bots_to_grid!(base_grid, s, p.num_agents, p.num_leaders)
 end
-
-n = 10
-n_obs = 3
-
-ob_arr = gen_multiple_rand_obstacles(n_obs, n)
-ob_map = map(ob_arr)
-base_map = get_base_grid(10)
-add_obstacles_to_grid!(base_map, ob_map)
-
-hm = heatmap(1:n, 1:n, base_map, aspect_ratio=:equal)
