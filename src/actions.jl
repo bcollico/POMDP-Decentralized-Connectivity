@@ -47,8 +47,8 @@ function POMDPs.actionindex(pomdp::ConnectPOMDP, a::Array{Symbol})
     # Total Number of Decision-Raking Robots
     num_agents = pomdp.num_agents
 
-    a_ind = zeros(Int,num_bots)
-    for k = 1:num_bots
+    a_ind = zeros(Int,num_agents)
+    for k = 1:num_agents
         if a[k] == :east;          a_ind[k] = 1
         elseif a[k] == :northeast; a_ind[k] = 2
         elseif a[k] == :north;     a_ind[k] = 3
