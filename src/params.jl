@@ -43,7 +43,7 @@ mutable struct ParamsStruct
         return new(1, 1, 10,        # Problem Setup
                   10, 2, 5,         # Map Parameters
                  -1e4, -1e4, -1e3,  # Rewards
-                  0.0, 0.0,         # Motion and Sensing Uncertainty
+                  1e-10, 1e-10,         # Motion and Sensing Uncertainty
                   1.0, 2,           # Connectivity Probability Distribution
                   1.0, 1.0,         # Transition probability distribution
                   2, 2,             # Collision Buffer Distance
@@ -72,7 +72,8 @@ struct ConnectPOMDP <: POMDP{Array{CartesianIndex}, Array{Symbol}, Array{Cartesi
     connectivity_dist::Truncated
 
     # Transition probability distribution (Discrete Gaussian)
-    p_transition_bins::Array{Float64} # binned probabilities sorted largest-to-smallest
+    p_bins_follower::Array{Float64} # binned probabilities sorted largest-to-smallest
+    p_bins_leader::Array{Float64} # error-free transition function for leaders
 
     # Collision Buffer Distance (L-nfty Norm)
     object_collision_buffer::Int 
@@ -84,7 +85,7 @@ struct ConnectPOMDP <: POMDP{Array{CartesianIndex}, Array{Symbol}, Array{Cartesi
     function ConnectPOMDP(params::ParamsStruct)
         
         # compute discrete Gaussian bins for transition function
-        p_bins = compute_transition_function(params)
+        p_bins_follower, p_bins_leader = compute_transition_function(params)
 
         # computed truncated Gaussian distribution for connectivity
         trunc_normal = truncated(Normal(0, params.σ_transition), 
@@ -93,7 +94,8 @@ struct ConnectPOMDP <: POMDP{Array{CartesianIndex}, Array{Symbol}, Array{Cartesi
 
         return new(params.num_agents, params.num_leaders, params.n_grid_size, 
                    params.R_o, params.R_a, params.R_λ, 
-                   params.σ_obs, params.σ_motion, trunc_normal, p_bins, 
+                   params.σ_obs, params.σ_motion, trunc_normal, 
+                   p_bins_follower, p_bins_leader,
                    params.object_collision_buffer, params.agent_collision_buffer, 
                    params.γ)
     end
@@ -122,6 +124,9 @@ function compute_transition_function(params::ParamsStruct)
         end
     end
 
+    p_bins_leader = zeros(n_actions)
+    p_bins_leader[1] = 1.0
+
     # ensure that probabilities sum to 1
-    return normalize!(p_bins, 1)
+    return normalize!(p_bins, 1), p_bins_leader
 end

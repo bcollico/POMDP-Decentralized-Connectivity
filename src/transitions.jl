@@ -56,9 +56,10 @@ function POMDPs.transition(pomdp::ConnectPOMDP, s::Array{CartesianIndex{2},1}, a
     num_agents = pomdp.num_agents
 
     a_ind = POMDPs.actionindex(pomdp::ConnectPOMDP, a::Array{Symbol})
-    p_bins = pomdp.p_transition_bins
+    p_bins_follower = pomdp.p_bins_follower
+    p_bins_leader   = pomdp.p_bins_leader
 
-    if abs(sum(p_bins) - 1) > 1e-4
+    if abs(sum(p_bins_follower) - 1) > 1e-4
         warn("Discrete Gaussian bins do not sum to 1 -- see transitions.jl")
     end
 
@@ -69,9 +70,13 @@ function POMDPs.transition(pomdp::ConnectPOMDP, s::Array{CartesianIndex{2},1}, a
         sp_order[sp_order .<= 0] .+= 8
         sp_order[sp_order .>= 9] .-= 8
         push!(sp_order, 9)
-
-        # add categorical distribution to transition function array
-        push!(T, Categorical(p_bins[sortperm(sp_order)]))
+        if k > pomdp.num_leaders
+            # add categorical distribution to transition function array
+            push!(T, Categorical(p_bins_follower[sortperm(sp_order)]))
+        else
+            # assign probability of 1 to desired state for leaders
+            push!(T, Categorical(p_bins_leader[sortperm(sp_order, rev=true)]))
+        end
     end
 
     return T
