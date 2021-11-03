@@ -1,7 +1,10 @@
-struct ParamsStruct
+using POMDPs
+
+mutable struct ParamsStruct
     # Problem Setup
     num_agents::Int
     num_leaders::Int
+    horizon::Int 
 
     # Map Parameters
     n_grid_size::Int
@@ -32,10 +35,19 @@ struct ParamsStruct
     # Learning Parameters
     γ::Float64  # Discount Factor, in range(0, 1)
     α::Float64  # Learning Factor, in range(0, 1)
-end
 
-function ParamsStruct()
-
+    """Default constructor for ParamsStruct"""
+    function ParamsStruct()
+        return new(1, 1, 10,        # Problem Setup
+                  10, 5, 2,         # Map Parameters
+                 -1e4, -1e4, -1e3,  # Rewards
+                  0.0, 0.0,         # Motion and Sensing Uncertainty
+                  1.0, 2,           # Connectivity Probability Distribution
+                  1.0, 1.0,         # Transition probability distribution
+                  2, 2,             # Collision Buffer Distance
+                  0.95, 0.50        # Learning Parameters
+        )
+    end
 end
 
 struct ConnectPOMDP <: POMDP{Array{CartesianIndices}, Array{Symbol}, Array{CartesianIndices}}
@@ -66,34 +78,13 @@ struct ConnectPOMDP <: POMDP{Array{CartesianIndices}, Array{Symbol}, Array{Carte
     agent_collision_buffer::Int
 
     γ::Float64 # Discount Factor
-end
 
-function ConnectPOMDP(params::ParamsStruct)
-       # Problem Setup
-       num_agents  = params.num_agents
-       num_leaders = params.num_leaders
-       n_grid_size = params.n_grid_size
-   
-       # Rewards
-       R_o = params.R_o    # Negative reward for agent-obstacle collision
-       R_a = params.R_a    # Negative reward for agent-agent    collision
-       R_λ = params.R_λ    # Negative reward for loss of connectivity
-   
-       # Motion and Sensing Uncertainty
-       σ_obs    = params.σ_obs    # Standard deviation of Gaussian measurement noise
-       σ_motion = params.σ_motion # Standard deviation of Gaussian process     noise
-   
-       # Connectivity Probability Distribution (Truncated Gaussian)
-       σ_connect      = params.σ_connect  # Standard deviation
-       connect_thresh = params.connect_thresh # Maximum distance threshold for connectivity
-   
-       # Transition probability distribution (Discrete Gaussian)
-       σ_transition = params.σ_transition
-       transition_bin_width = params.transition_bin_width
-   
-       # Collision Buffer Distance (L-nfty Norm)
-       object_collision_buffer = params.object_collision_buffer
-       agent_collision_buffer = params.agent_collision_buffer
-   
-       γ = params.γ # Discount Factor
+    """Constructor for ConnectPOMDP based on ParamsStruct"""
+    function ConnectPOMDP(params::ParamsStruct)
+        return new(params.num_agents, params.num_leaders, params.n_grid_size, 
+                   params.R_o, params.R_a, params.R_λ, params.σ_obs, params.σ_motion, 
+                   params.σ_connect, params.connect_thresh, params.σ_transition, 
+                   params.transition_bin_width, params.object_collision_buffer, 
+                   params.agent_collision_buffer, params.γ)
+    end
 end
