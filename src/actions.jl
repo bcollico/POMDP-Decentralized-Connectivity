@@ -3,17 +3,18 @@ using POMDPs
 include("./params.jl")
 
 """
+    POMDPs.actions(pomdp::ConnectPOMDP) 
 
 The ConnectPOMDP is specified over an n-by-n grid world with m number of 
 decision-making agents. Each agent has an action space with cardinality of 9 --
 8 directions to move and 1 option to remain stationary. The action space of the
 overall problem has cardinality m-by-9
 
-Inputs:
-    pomdp   The ConnectPOMDP instance
+### Inputs:
+- pomdp     --The ConnectPOMDP instance
 
-Outputs:
-    𝒜       The full action space
+### Outputs:
+- 𝒜        -- The full action space
 """
 function POMDPs.actions(pomdp::ConnectPOMDP) 
     
@@ -31,14 +32,15 @@ function POMDPs.actions(pomdp::ConnectPOMDP)
 end
 
 """
+    POMDPs.actionindex(pomdp::ConnectPOMDP, a::Array{Symbol})
 
 Determine the linear index of the actions taken by each agent.
 
-Inputs:
-    pomdp   The ConnectPOMDP instance
+### Inputs:
+- pomdp     -- The ConnectPOMDP instance
 
-Outputs:
-    a_ind   Array of linear indices for each agents' action
+### Outputs:
+- a_ind     -- Array of linear indices for each agents' action
 """
 function POMDPs.actionindex(pomdp::ConnectPOMDP, a::Array{Symbol})
     # The Grid Size (i.e., n_grid_size x n_grid_size)
