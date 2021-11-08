@@ -52,7 +52,7 @@ mutable struct ParamsStruct
     end
 end
 
-# Daniel Note: Updated the states and observations to Array{CartesianIndex}
+
 struct ConnectPOMDP <: POMDP{Array{CartesianIndex}, Array{Symbol}, Array{CartesianIndex}}
     # Problem Setup
     num_agents::Int
@@ -150,6 +150,7 @@ function compute_sp_order_table()
             sp_order_table[sp_order_table[:,k] .<= 0, k] .+= 8
             sp_order_table[sp_order_table[:,k] .>= 9, k] .-= 8
         else
+            # action is to stay (#9)
             sp_order_table[:, k] = [9, 1, 2, 3, 4, 5, 6, 7, 8]
         end
         

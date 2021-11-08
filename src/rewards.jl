@@ -41,7 +41,7 @@ function rewards(s_tot::Array, obstacles::Array, alg_connect::Float64, pomdp::Co
     end
 
     # compute connectivity maintenance reward
-    if alg_connect == 0
+    if alg_connect <= 0
         reward_connect += pomdp.R_λ
     end
 
