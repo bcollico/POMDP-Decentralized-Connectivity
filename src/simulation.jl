@@ -33,16 +33,20 @@ for _ in  1:num_steps
     println(t_prob)
     for n = 1:num_bots
         # Sample t_prob
-        relative_new_states = rand(t_prob[n], 1)
-        print("relative: ")
-        println(relative_new_states)
+        relative_new_states = rand(t_prob[n], 1)[1]
+        # print("relative: ")
+        # println(relative_new_states)
         
         # Get the reachable states
         reachable_s_bot = compute_reachable_states(current_states[n])
         # get the reachable state that matches the realization of the transition
         # distribution
-        print("reachable: ")
-        println(reachable_s_bot)
+        # print("reachable: ")
+        # println(reachable_s_bot)
+        # println(reachable_s_bot[relative_new_states])
+
+        # print("Previously at ")
+        # println(current_states[n])
         current_states[n] = reachable_s_bot[relative_new_states]
         print("New state for robot ")
         print(n)
