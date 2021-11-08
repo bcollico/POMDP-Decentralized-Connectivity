@@ -38,6 +38,9 @@ mutable struct ParamsStruct
     γ::Float64  # Discount Factor, in range(0, 1)
     α::Float64  # Learning Factor, in range(0, 1)
 
+    # Initial States to build the Initial State Distribution
+    init_states::Array{CartesianIndex{2}, 1} # Initial states
+
     """Default constructor for ParamsStruct"""
     function ParamsStruct()
         return new(1, 1, 10,        # Problem Setup
@@ -47,7 +50,8 @@ mutable struct ParamsStruct
                   1.0, 2,           # Connectivity Probability Distribution
                   1.0, 1.0,         # Transition probability distribution
                   2, 2,             # Collision Buffer Distance
-                  0.95, 0.50        # Learning Parameters
+                  0.95, 0.50,       # Learning Parameters
+                  [CartesianIndex(2, 2), CartesianIndex(8, 8)]  # Initial State
         )
     end
 end
@@ -81,6 +85,8 @@ struct ConnectPOMDP <: POMDP{Array{CartesianIndex}, Array{Symbol}, Array{Cartesi
 
     γ::Float64 # Discount Factor
 
+    init_states::Array{CartesianIndex{2}, 1} # Initial states
+
     """Constructor for ConnectPOMDP based on ParamsStruct"""
     function ConnectPOMDP(params::ParamsStruct)
         
@@ -95,15 +101,19 @@ struct ConnectPOMDP <: POMDP{Array{CartesianIndex}, Array{Symbol}, Array{Cartesi
 
         # compute lookup table for state transitions
         sp_order_table = compute_sp_order_table()
-
+        
         return new(params.num_agents, params.num_leaders, params.n_grid_size, 
                    params.R_o, params.R_a, params.R_λ, 
                    p_bins_observation, trunc_normal, 
                    p_bins_follower, p_bins_leader, sp_order_table,
                    params.object_collision_buffer, params.agent_collision_buffer, 
-                   params.γ)
+                   params.γ, params.init_states)
     end
 end
+
+
+POMDPs.discount(pomdp::ConnectPOMDP) = pomdp.γ
+
 
 function compute_discrete_gaussian(σ::Float64, b::Float64)
     # TODO: Generalize to different numbers of actions

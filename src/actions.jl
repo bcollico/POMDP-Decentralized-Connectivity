@@ -22,7 +22,7 @@ function POMDPs.actions(pomdp::ConnectPOMDP)
     n_grid_size = pomdp.n_grid_size
 
     # Total Number of Decision-Raking Robots
-    num_bots = pomdp.num_bots
+    num_bots = pomdp.num_agents + pomdp.num_leaders
 
     # Actions for a Single Agent
     a = [:east, :northeast, :north, :northwest,
