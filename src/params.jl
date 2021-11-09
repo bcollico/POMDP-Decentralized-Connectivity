@@ -38,6 +38,9 @@ mutable struct ParamsStruct
     γ::Float64  # Discount Factor, in range(0, 1)
     α::Float64  # Learning Factor, in range(0, 1)
 
+    # Initial States
+    init_states::Tuple
+
     """Default constructor for ParamsStruct"""
     function ParamsStruct()
         return new(1, 1, 10,        # Problem Setup
@@ -47,13 +50,14 @@ mutable struct ParamsStruct
                   1.0, 2,           # Connectivity Probability Distribution
                   1.0, 1.0,         # Transition probability distribution
                   2, 2,             # Collision Buffer Distance
-                  0.95, 0.50        # Learning Parameters
+                  0.95, 0.50,       # Learning Parameters
+                  (CartesianIndex(10, 10), CartesianIndex(1, 1))   # Initial States
         )
     end
 end
 
-# Daniel Note: Updated the states and observations to Array{CartesianIndex}
-struct ConnectPOMDP <: POMDP{Tuple{CartesianIndex}, Tuple{Symbol}, Tuple{CartesianIndex}}
+
+struct ConnectPOMDP <: POMDP{Tuple, Tuple, Tuple}
     # Problem Setup
     num_agents::Int
     num_leaders::Int
@@ -81,6 +85,9 @@ struct ConnectPOMDP <: POMDP{Tuple{CartesianIndex}, Tuple{Symbol}, Tuple{Cartesi
 
     γ::Float64 # Discount Factor
 
+    # Initial States
+    init_states::Tuple
+
     """Constructor for ConnectPOMDP based on ParamsStruct"""
     function ConnectPOMDP(params::ParamsStruct)
         
@@ -101,7 +108,7 @@ struct ConnectPOMDP <: POMDP{Tuple{CartesianIndex}, Tuple{Symbol}, Tuple{Cartesi
                    p_bins_observation, trunc_normal, 
                    p_bins_follower, p_bins_leader, sp_order_table,
                    params.object_collision_buffer, params.agent_collision_buffer, 
-                   params.γ)
+                   params.γ, params.init_states)
     end
 end
 

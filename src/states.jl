@@ -56,7 +56,7 @@ into the state vector.
 ### Note:
 This function currently assumes a 2D grid, not a 3D grid.
 """
-function POMDPs.stateindex(pomdp::ConnectPOMDP, s::Tuple{CartesianIndex})
+function POMDPs.stateindex(pomdp::ConnectPOMDP, s::Tuple)
     # The Grid Size (i.e., n_grid_size x n_grid_size)
     n_grid_size = pomdp.n_grid_size
     # The total grid size is n_grid_size_flat = n_grid_size x n_grid_size

@@ -58,13 +58,13 @@ Outputs:
     T       Array of DiscreteUnivariateDistributions describing the probability
             of transitioning to each of the states adjacent to state s
 """
-function POMDPs.transition(pomdp::ConnectPOMDP, s::Tuple{CartesianIndex}, a::Tuple{Symbol}) 
+function POMDPs.transition(pomdp::ConnectPOMDP, s::Tuple, a::Tuple) 
     # Total Number of Decision-Raking Robots
     num_bots = pomdp.num_agents + pomdp.num_leaders
 
     a_ind = POMDPs.actionindex(pomdp, a)
 
-    𝒮 = POMDPs.states(pomdp)
+    𝒮 = CartesianIndices(ones(pomdp.n_grid_size, pomdp.n_grid_size))
 
     T = []
     for k = 1:num_bots
@@ -88,7 +88,7 @@ function POMDPs.transition(pomdp::ConnectPOMDP, s::Tuple{CartesianIndex}, a::Tup
         p_bins = p_bins[sortperm(sp_order)]
 
         # compute reachable states and check out-of-bounds constraint
-        compute_p_reachable!(p_bins, s[k], 𝒮[1])
+        compute_p_reachable!(p_bins, s[k], 𝒮)
 
         if abs(sum(p_bins) - 1) > 1e-4
             @warn("Discrete Gaussian bins do not sum to 1 -- see transitions.jl")

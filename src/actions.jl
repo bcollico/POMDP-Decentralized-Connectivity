@@ -32,7 +32,7 @@ function POMDPs.actions(pomdp::ConnectPOMDP)
 end
 
 """
-    POMDPs.actionindex(pomdp::ConnectPOMDP, a::Tuple{Symbol})
+    POMDPs.actionindex(pomdp::ConnectPOMDP, a::Tuple)
 
 Determine the linear index of the actions taken by each agent.
 
@@ -42,7 +42,7 @@ Determine the linear index of the actions taken by each agent.
 ### Outputs:
 - a_ind     -- Array of linear indices for each agents' action
 """
-function POMDPs.actionindex(pomdp::ConnectPOMDP, a::Tuple{Symbol})
+function POMDPs.actionindex(pomdp::ConnectPOMDP, a::Tuple)
     # The Grid Size (i.e., n_grid_size x n_grid_size)
     n_grid_size = pomdp.n_grid_size
 

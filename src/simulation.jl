@@ -20,17 +20,25 @@ rand_policy = RandomPolicy(connect_pomdp)
 
 num_steps = 10
 
-action_hard = [:east, :west]
+action_hard = (:west, :east)
 
 num_bots = connect_pomdp.num_agents + connect_pomdp.num_leaders
 
 current_states = POMDPs.initialstate_distribution(connect_pomdp)
+println("started at")
+println(current_states)
 
 for _ in  1:num_steps
     # Transition
+    global current_states
+    # println("currently at")
+    # println(current_states)
     t_prob = transition(connect_pomdp, current_states, action_hard)
-    print("Transition Probability")
-    println(t_prob)
+    # print("Transition Probability")
+    # println(t_prob)
+
+    new_state = []
+
     for n = 1:num_bots
         # Sample t_prob
         relative_new_states = rand(t_prob[n], 1)[1]
@@ -47,10 +55,14 @@ for _ in  1:num_steps
 
         # print("Previously at ")
         # println(current_states[n])
-        current_states[n] = reachable_s_bot[relative_new_states]
-        print("New state for robot ")
-        print(n)
-        print(" is ")
-        println(current_states[n])
+        push!(new_state, reachable_s_bot[relative_new_states])
+        # print("New state for robot ")
+        # print(n)
+        # print(" is ")
+        # println(new_state[n])
     end
+
+    current_states = Tuple(new_state)
+    print("New states: ")
+    println(current_states)
 end
