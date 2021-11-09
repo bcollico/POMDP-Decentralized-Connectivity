@@ -62,7 +62,7 @@ mutable struct ParamsStruct
                   1.0, 1.0,         # Transition probability distribution
                   2, 2,             # Collision Buffer Distance
                   0.95, 0.50,       # Learning Parameters
-                  (CartesianIndex(10, 10), CartesianIndex(1, 1))   # Initial States
+                  (CartesianIndex(2, 2), CartesianIndex(6, 4))   # Initial States
         )
     end
 end

@@ -15,9 +15,9 @@ function POMDPs.initialstate_distribution(pomdp::ConnectPOMDP)
     # for init_state in pomdp.init_states
     #     push!(init_state_dist, Deterministic(init_state))
     # end
-    print("Initial State Type: ")
-    println(typeof(pomdp.init_states))
-    println(pomdp.init_states)
+    # print("Initial State Type: ")
+    # println(typeof(pomdp.init_states))
+    # println(pomdp.init_states)
     return pomdp.init_states
 
 end
