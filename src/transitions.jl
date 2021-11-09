@@ -103,7 +103,7 @@ function POMDPs.transition(pomdp::ConnectPOMDP, s::Tuple, a::Tuple)
     #s_prod = Base.product(s_reach...)
     #p_iter = Base.product([p_bins[:,k] for k in 1:num_bots]...)
 
-    p_joint = []
+    p_joint = Float64[]
     p_state = []
     for (s, p) in p_s_iter
         p_joint_i = prod(p)
