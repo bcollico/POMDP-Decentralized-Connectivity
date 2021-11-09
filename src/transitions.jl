@@ -1,4 +1,5 @@
 using POMDPs
+using POMDPModelTools
 
 include("./params.jl")
 include("./actions.jl")
@@ -62,10 +63,12 @@ function POMDPs.transition(pomdp::ConnectPOMDP, s::Tuple, a::Tuple)
     # Total Number of Decision-Raking Robots
     num_bots = pomdp.num_agents + pomdp.num_leaders
 
+    # get action index to determine the most likely transition
     a_ind = POMDPs.actionindex(pomdp, a)
 
-    𝒮 = CartesianIndices(ones(pomdp.n_grid_size, pomdp.n_grid_size))
-
+    p_bins = zeros(9, num_bots)
+    p_inds = zeros(9, num_bots)
+    s_reach = []
     T = []
     for k = 1:num_bots
         # find the order of likeliest states using the given action
@@ -73,37 +76,47 @@ function POMDPs.transition(pomdp::ConnectPOMDP, s::Tuple, a::Tuple)
 
         # reset the bin distributions
         if k > pomdp.num_leaders
-            p_bins = [pomdp.p_bins_follower...]
+            p_bins[:,k] = [pomdp.p_bins_follower...]
         else
-            p_bins = [pomdp.p_bins_leader...]
+            p_bins[:,k] = [pomdp.p_bins_leader...]
         end
         
         if a_ind[k] == 9
             # if action == :stay, assign the highest bin to the current state
             # and uniformly distribution the remaining probability among the others
-            p_bins[2:9] = (1-p_bins[1])/8 .* ones(8)
+            p_bins[2:9, k] = (1-p_bins[1, k])/8 .* ones(8)
         end
 
         # sort the probability bins to the order of possible states
-        p_bins = p_bins[sortperm(sp_order)]
+        p_bins[:,k] = p_bins[sortperm(sp_order), k]
 
         # compute reachable states and check out-of-bounds constraint
-        compute_p_reachable!(p_bins, s[k], 𝒮)
+        p_bins[:,k], s_reach_k = compute_p_reachable(pomdp, p_bins[:,k], s[k])
 
-        if abs(sum(p_bins) - 1) > 1e-4
+        push!(s_reach, s_reach_k)
+
+        if abs(sum(p_bins[:,k]) - 1) > 1e-4
             @warn("Discrete Gaussian bins do not sum to 1 -- see transitions.jl")
         end
 
-        if k > pomdp.num_leaders
-            # add categorical distribution to transition function array
-            push!(T, Categorical(p_bins))
-        else
-            # assign probability of 1 to desired state for leaders
-            push!(T, Categorical(p_bins))
+    end
+
+
+    p_s_iter = zip(Base.product(s_reach...), Base.product([p_bins[:,k] for k in 1:num_bots]...))
+    #s_prod = Base.product(s_reach...)
+    #p_iter = Base.product([p_bins[:,k] for k in 1:num_bots]...)
+
+    p_joint = []
+    p_state = []
+    for (s, p) in p_s_iter
+        p_joint_i = prod(p)
+        if p_joint_i > eps()
+            push!(p_joint,prod(p))
+            push!(p_state, s)
         end
     end
 
-    return T
+    return POMDPModelTools.SparseCat(p_state, p_joint)
 end
 
 """
@@ -144,12 +157,17 @@ input
     s       Single state to compute reachable states about
 
 """
-function compute_p_reachable!(
+function compute_p_reachable(
+    pomdp::ConnectPOMDP,
     p_bins::Array{Float64}, 
     s::CartesianIndex, 
-    𝒮::CartesianIndices{2,Tuple{Base.OneTo{Int64},Base.OneTo{Int64}}}
 )
+    # Instantiate grid world states to check reachable set
+    𝒮 = CartesianIndices(ones(pomdp.n_grid_size, pomdp.n_grid_size))
+
+    # compute reachable states without constraint on world borders
     reachable_states = compute_reachable_states(s)
+
     for i = 1:length(reachable_states)
         # Check each reachable state for out of bounds constraint
         if reachable_states[i] ∉ 𝒮
@@ -158,5 +176,5 @@ function compute_p_reachable!(
             p_bins[i] = 0
         end
     end
-    return p_bins
+    return p_bins, reachable_states
 end
