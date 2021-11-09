@@ -2,6 +2,7 @@ using Plots
 using CategoricalArrays
 
 include("map_generation.jl")
+include("params.jl")
 
 """
     get_base_grid(p::ParamsStruct)
@@ -87,6 +88,15 @@ num_agents::Int, num_leaders::Int)` for full details.
 function add_bots_to_grid!(base_grid, s::Array{CartesianIndex{2}, 1}, 
                             p::ParamsStruct)
     add_bots_to_grid!(base_grid, s, p.num_agents, p.num_leaders)
+end
+
+function add_bots_to_grid!(base_grid, s::Tuple, 
+    num_agents::Int, num_leaders::Int)
+    add_bots_to_grid!(base_grid, [s...], num_agents, num_leaders)
+end
+
+function add_bots_to_grid!(base_grid, s::Tuple, p::ParamsStruct)
+    add_bots_to_grid!(base_grid, [s...], p.num_agents, p.num_leaders)
 end
 
 """
@@ -215,4 +225,17 @@ function multiagent_grid_world_plot(params::ParamsStruct, obstacles_map::map,
     s::Array{CartesianIndex{2}, 1})
     return multiagent_grid_world_plot(params.n_grid_size, obstacles_map,
                                     s, params.num_agents, params.num_leaders)
+end
+
+function multiagent_grid_world_plot(n_grid_size::Int, obstacles_map::map, 
+                                    s::Tuple, 
+                                    num_agents::Int, num_leaders::Int)
+    return multiagent_grid_world_plot(n_grid_size, obstacles_map, [s...],
+                                    num_agents, num_leaders)
+end
+
+function multiagent_grid_world_plot(params::ParamsStruct, obstacles_map::map, 
+    s::Tuple)
+    return multiagent_grid_world_plot(params.n_grid_size, obstacles_map,
+                                [s...], params.num_agents, params.num_leaders)
 end

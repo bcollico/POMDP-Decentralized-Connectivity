@@ -15,8 +15,8 @@ ob_map = map(ob_arr)
 # base_map = get_base_grid(n)
 # add_obstacles_to_grid!(base_map, ob_map)
 
-states = [CartesianIndex(2, 2), CartesianIndex(5, 6), CartesianIndex(10, 6),
-            CartesianIndex(8, 9), CartesianIndex(4, 7), CartesianIndex(9, 3)]
+states = (CartesianIndex(2, 2), CartesianIndex(5, 6), CartesianIndex(10, 6),
+            CartesianIndex(8, 9), CartesianIndex(4, 7), CartesianIndex(9, 3))
 
 # add_bots_to_grid!(base_map, states, n_agents, n_leaders)
 
