@@ -67,9 +67,7 @@ function POMDPs.transition(pomdp::ConnectPOMDP, s::Tuple, a::Tuple)
     a_ind = POMDPs.actionindex(pomdp, a)
 
     p_bins = zeros(9, num_bots)
-    p_inds = zeros(9, num_bots)
     s_reach = []
-    T = []
     for k = 1:num_bots
         # find the order of likeliest states using the given action
         sp_order = [pomdp.sp_order_table[:, a_ind[k]]...]
@@ -100,7 +98,6 @@ function POMDPs.transition(pomdp::ConnectPOMDP, s::Tuple, a::Tuple)
         end
 
     end
-
 
     p_s_iter = zip(Base.product(s_reach...), Base.product([p_bins[:,k] for k in 1:num_bots]...))
     #s_prod = Base.product(s_reach...)
