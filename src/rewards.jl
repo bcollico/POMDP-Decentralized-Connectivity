@@ -9,7 +9,7 @@
 
     It then sums them up to return the total reward of the system.
 """
-function rewards(s_tot::Array, obstacles::Array, alg_connect::Float64, pomdp::ConnectPOMDP)
+function POMDPs.reward(s_tot::Array, obstacles::Array, alg_connect::Float64, pomdp::ConnectPOMDP)
     num_agents = pomdp.num_agents
     num_leaders = pomdp.num_leaders
     num_obstacles = length(obstacles)
