@@ -11,6 +11,9 @@ rand_policy = RandomPolicy(connect_pomdp)
 
 # print(rand_policy)
 
+print("Pick the action of the initial state: ")
+println(action(rand_policy, POMDPs.initialstate(connect_pomdp)))
+
 # for (s, a, r) in stepthrough(connect_pomdp, rand_policy, "s,a,r", max_steps=10)
 #     @show s
 #     @show a

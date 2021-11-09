@@ -21,3 +21,7 @@ function POMDPs.initialstate_distribution(pomdp::ConnectPOMDP)
     return pomdp.init_states
 
 end
+
+function POMDPs.initialstate(pomdp::ConnectPOMDP)
+    return POMDPs.initialstate_distribution(pomdp)
+end
