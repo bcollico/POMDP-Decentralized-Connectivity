@@ -29,16 +29,16 @@ function POMDPs.observation(pomdp::ConnectPOMDP, a::Tuple, s::Tuple)
     # Total Number of Decision-Raking Robots
     num_bots = pomdp.num_agents + pomdp.num_leaders
 
-    a_ind = POMDPs.actionindex(pomdp, a)
+    # a_ind = POMDPs.actionindex(pomdp, a)
 
-    𝒮 = POMDPs.states(pomdp)
+    # 𝒮 = POMDPs.states(pomdp)
 
-    𝒪 = []
-    for k = 1:num_bots
-        push!(𝒪, compute_observations(pomdp, num_bots, a_ind, s, 𝒮[1]))
-    end
+    #𝒪 = []
+    #for k = 1:num_bots
+    #    push!(𝒪, compute_observations(pomdp, num_bots, a_ind, s, 𝒮[1]))
+    #end
 
-    return 𝒪
+    return compute_observations(pomdp, num_bots, s)
 end
 
 """
@@ -61,33 +61,45 @@ output
 function compute_observations(
     pomdp::ConnectPOMDP,
     num_bots::Int,
-    a_ind::Array{Int},
     s::Tuple,
-    𝒮::CartesianIndices{2,Tuple{Base.OneTo{Int64},Base.OneTo{Int64}}}
 )
-    𝒪 = []
+    p_bins = zeros(9, num_bots)
+    s_reach = []
     for k = 1:num_bots
         # find the order of likeliest states using the given action
         sp_order = [pomdp.sp_order_table[:, 9]...]
 
         # reset the bin distributions
-        p_bins = [pomdp.p_bins_observation...]
+        p_bins[:, k] = [pomdp.p_bins_observation...]
         
-        p_bins[2:9] = (1-p_bins[1])/8 .* ones(8)
+        p_bins[2:9, k] = (1-p_bins[1, k])/8 .* ones(8)
 
         # sort the probability bins to the order of possible states
-        p_bins = p_bins[sortperm(sp_order)]
+        p_bins[:,k] = p_bins[sortperm(sp_order), k]
 
         # compute reachable states and check out-of-bounds constraint
-        compute_p_reachable!(p_bins, s[k], 𝒮)
+        p_bins[:,k], s_reach_k = compute_p_reachable(pomdp, p_bins[:,k], s[k])
+
+        push!(s_reach, s_reach_k)
 
         if abs(sum(p_bins) - 1) > 1e-4
             @warn("Discrete Gaussian bins do not sum to 1 -- see transitions.jl")
         end
-
-        # add categorical distribution to transition function array
-        push!(𝒪, Categorical(p_bins))
     end
     
-    return 𝒪
+    p_s_iter = zip(Base.product(s_reach...), Base.product([p_bins[:,k] for k in 1:num_bots]...))
+    #s_prod = Base.product(s_reach...)
+    #p_iter = Base.product([p_bins[:,k] for k in 1:num_bots]...)
+
+    p_joint = []
+    p_state = []
+    for (s, p) in p_s_iter
+        p_joint_i = prod(p)
+        if p_joint_i > eps()
+            push!(p_joint,prod(p))
+            push!(p_state, s)
+        end
+    end
+
+    return POMDPModelTools.SparseCat(p_state, p_joint)
 end
