@@ -28,7 +28,7 @@ function POMDPs.actions(pomdp::ConnectPOMDP)
     a = [:east, :northeast, :north, :northwest,
          :west, :southwest, :south, :southeast, :stay]
 
-    return [a for k in 1:num_bots]
+    return collect(Base.product([a for _ in 1:num_bots]...))
 end
 
 """
