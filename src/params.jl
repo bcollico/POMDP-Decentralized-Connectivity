@@ -2,6 +2,17 @@ using POMDPs
 using Distributions
 using LinearAlgebra
 
+
+"""
+    map
+
+Store the map of the obstacle locations. Each obstacle is represented with a 
+CartesianIndex.
+"""
+struct map
+    obstacleLocations::Array{CartesianIndex}
+end
+
 mutable struct ParamsStruct
     # Problem Setup
     num_agents::Int
@@ -44,7 +55,7 @@ mutable struct ParamsStruct
     """Default constructor for ParamsStruct"""
     function ParamsStruct()
         return new(1, 1, 10,        # Problem Setup
-                  10, 2, 5,         # Map Parameters
+                  10, 2, 1,         # Map Parameters
                  -1e4, -1e4, -1e3,  # Rewards
                   1e-10, 1.0,       # Sensing Uncertainty
                   1.0, 2,           # Connectivity Probability Distribution
@@ -88,6 +99,9 @@ struct ConnectPOMDP <: POMDP{Tuple, Tuple, Tuple}
     # Initial States
     init_states::Tuple
 
+    # Obstacles
+    obstacles::Array
+
     """Constructor for ConnectPOMDP based on ParamsStruct"""
     function ConnectPOMDP(params::ParamsStruct)
         
@@ -103,12 +117,15 @@ struct ConnectPOMDP <: POMDP{Tuple, Tuple, Tuple}
         # compute lookup table for state transitions
         sp_order_table = compute_sp_order_table()
 
+        # generate obstacles
+        obstacles = [CartesianIndex(1,1)]
+
         return new(params.num_agents, params.num_leaders, params.n_grid_size, 
                    params.R_o, params.R_a, params.R_λ, 
                    p_bins_observation, trunc_normal, 
                    p_bins_follower, p_bins_leader, sp_order_table,
                    params.object_collision_buffer, params.agent_collision_buffer, 
-                   params.γ, params.init_states)
+                   params.γ, params.init_states, obstacles)
     end
 end
 

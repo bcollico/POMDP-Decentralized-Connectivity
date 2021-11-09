@@ -1,3 +1,5 @@
+include("compute_connectivity.jl")
+
 """
     The function rewards() takes in the positions of agents and leaders 
     as an array of CartesianIndices, the obstacle positions as an array of CartesianIndices, 
@@ -9,10 +11,12 @@
 
     It then sums them up to return the total reward of the system.
 """
-function POMDPs.reward(s_tot::Array, obstacles::Array, alg_connect::Float64, pomdp::ConnectPOMDP)
+function POMDPs.reward(pomdp::ConnectPOMDP, s_tot::Tuple, a::Tuple)
     num_agents = pomdp.num_agents
     num_leaders = pomdp.num_leaders
-    num_obstacles = length(obstacles)
+    num_obstacles = length(pomdp.obstacles)
+
+    alg_connect = compute_connectivity(s_tot, pomdp)
 
     reward_collisions = 0
     reward_obstacles = 0
@@ -33,7 +37,7 @@ function POMDPs.reward(s_tot::Array, obstacles::Array, alg_connect::Float64, pom
     # compute obstacle collision reward
     for i in 1:num_agents+num_leaders
         for j in 1:num_obstacles
-            dist = maximum([s_tot[i][1]-obstacles[j][1], s_tot[i][2]-obstacles[j][2]])
+            dist = maximum([s_tot[i][1]-pomdp.obstacles[j][1], s_tot[i][2]-pomdp.obstacles[j][2]])
             if dist <= pomdp.object_collision_buffer
                 reward_obstacles += pomdp.R_o
             end

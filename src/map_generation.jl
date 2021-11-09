@@ -4,16 +4,6 @@ include("params.jl")
 # The objective of this file is to set the obstacles in the POMDP problem
 
 """
-    map
-
-Store the map of the obstacle locations. Each obstacle is represented with a 
-CartesianIndex.
-"""
-struct map
-    obstacleLocations::Array{CartesianIndex}
-end
-
-"""
     gen_rand_obstacle(n_grid::Int, grid_dimension::Int = 2)
 
 Helper function to generate a single random obstacle.

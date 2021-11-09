@@ -13,7 +13,7 @@ using LinearAlgebra
     The degree_matrix is also determined and the laplacian_matrix = adjacency_matrix - degree_matrix 
     is finally used to get the algebraic connectivity (its second smallest eigenvalue).
 """
-function compute_connectivity(s_tot::Array, pomdp::ConnectPOMDP)
+function compute_connectivity(s_tot::Tuple, pomdp::ConnectPOMDP)
 
     # number of agents
     n = pomdp.num_agents + pomdp.num_leaders
