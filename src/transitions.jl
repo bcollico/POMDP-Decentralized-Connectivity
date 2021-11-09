@@ -58,7 +58,7 @@ Outputs:
     T       Array of DiscreteUnivariateDistributions describing the probability
             of transitioning to each of the states adjacent to state s
 """
-function POMDPs.transition(pomdp::ConnectPOMDP, s::Array{CartesianIndex{2},1}, a::Array{Symbol}) 
+function POMDPs.transition(pomdp::ConnectPOMDP, s::Array{CartesianIndex{2},1}, a::Tuple{Symbol}) 
     # Total Number of Decision-Raking Robots
     num_bots = pomdp.num_agents + pomdp.num_leaders
 
