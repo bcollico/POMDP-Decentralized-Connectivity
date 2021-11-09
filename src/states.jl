@@ -68,7 +68,7 @@ function POMDPs.stateindex(pomdp::ConnectPOMDP, s::Tuple)
     li = LinearIndices((n_grid_size, n_grid_size))
 
     # Stores the LinearIndices of the grid for each robot
-    bot_indices = zeros(num_bots)
+    bot_indices = zeros(Int, num_bots)
     for bot in 1:num_bots
         # Calculate the LinearIndices of the grid for each robot
         # s[bot] is a CartesianIndex
