@@ -25,7 +25,7 @@ input
 output
     𝒪       Array of vectors of observation distributions
 """
-function POMDPs.observation(pomdp::ConnectPOMDP, a::Tuple{Symbol}, s::Array{CartesianIndex{2},1})
+function POMDPs.observation(pomdp::ConnectPOMDP, a::Tuple{Symbol}, s::Tuple{CartesianIndex})
     # Total Number of Decision-Raking Robots
     num_bots = pomdp.num_agents + pomdp.num_leaders
 
@@ -62,7 +62,7 @@ function compute_observations(
     pomdp::ConnectPOMDP,
     num_bots::Int,
     a_ind::Array{Int},
-    s::Array{CartesianIndex{2},1},
+    s::Tuple{CartesianIndex},
     𝒮::CartesianIndices{2,Tuple{Base.OneTo{Int64},Base.OneTo{Int64}}}
 )
     𝒪 = []

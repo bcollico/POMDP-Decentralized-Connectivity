@@ -26,13 +26,14 @@ This function currently assumes a 2D grid, not a 3D grid.
 """
 function POMDPs.states(pomdp::ConnectPOMDP)
     # The Grid Size (i.e., n_grid_size x n_grid_size)
-    n_grid_size = pomdp.n_grid_size
+    n_grid = pomdp.n_grid_size
 
     # Total number of robots
     num_bots = pomdp.num_agents + pomdp.num_leaders
 
     # The full state space 𝒮
-    return [CartesianIndices(ones(n_grid_size, n_grid_size)) for _ in 1:num_bots]
+    S_arr = [CartesianIndices(ones(n_grid, n_grid)) for _ in 1:num_bots]
+    return collect(Base.product(S_arr...))
 end 
 
 """
@@ -55,7 +56,7 @@ into the state vector.
 ### Note:
 This function currently assumes a 2D grid, not a 3D grid.
 """
-function POMDPs.stateindex(pomdp::ConnectPOMDP, s::Array{CartesianIndex})
+function POMDPs.stateindex(pomdp::ConnectPOMDP, s::Tuple{CartesianIndex})
     # The Grid Size (i.e., n_grid_size x n_grid_size)
     n_grid_size = pomdp.n_grid_size
     # The total grid size is n_grid_size_flat = n_grid_size x n_grid_size
@@ -79,5 +80,5 @@ function POMDPs.stateindex(pomdp::ConnectPOMDP, s::Array{CartesianIndex})
     outer_bot_num_dimension = Tuple([n_grid_size_flat for bot in 1:num_bots])
 
     # Output the unique number that describes that state array
-    return LinearIndices(outer_bot_num_dimension)[bot_indices]
+    return LinearIndices(outer_bot_num_dimension)[bot_indices...]
 end
