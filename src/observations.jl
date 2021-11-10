@@ -82,8 +82,8 @@ function compute_observations(
 
         push!(s_reach, s_reach_k)
 
-        if abs(sum(p_bins) - 1) > 1e-4
-            @warn("Discrete Gaussian bins do not sum to 1 -- see transitions.jl")
+        if abs(sum(p_bins[:,k]) - 1) > 1e-4
+            @warn("Discrete Gaussian bins do not sum to 1 ($(sum(p_bins[:,k]))) -- see observations.jl")
         end
     end
     
@@ -91,7 +91,7 @@ function compute_observations(
     #s_prod = Base.product(s_reach...)
     #p_iter = Base.product([p_bins[:,k] for k in 1:num_bots]...)
 
-    p_joint = []
+    p_joint = Float64[]
     p_state = []
     for (s, p) in p_s_iter
         p_joint_i = prod(p)
