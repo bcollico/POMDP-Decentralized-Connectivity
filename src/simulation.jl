@@ -20,8 +20,11 @@ rand_policy = RandomPolicy(connect_pomdp)
 
 # print(rand_policy)
 
-print("Pick the action of the initial state: ")
+print("Initial State: ")
 s_first = POMDPs.initialstate(connect_pomdp)
+println(s_first)
+
+print("Pick the action of the initial state: ")
 a_rand_first = action(rand_policy, s_first)
 println(a_rand_first)
 

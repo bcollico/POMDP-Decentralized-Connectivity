@@ -59,7 +59,7 @@ Outputs:
     T       Array of DiscreteUnivariateDistributions describing the probability
             of transitioning to each of the states adjacent to state s
 """
-function POMDPs.transition(pomdp::ConnectPOMDP, s::Tuple, a::Tuple) 
+function POMDPs.transition(pomdp::ConnectPOMDP, s::Deterministic, a::Tuple) 
     # Total Number of Decision-Raking Robots
     num_bots = pomdp.num_agents + pomdp.num_leaders
 
@@ -89,7 +89,7 @@ function POMDPs.transition(pomdp::ConnectPOMDP, s::Tuple, a::Tuple)
         p_bins[:,k] = p_bins[sortperm(sp_order), k]
 
         # compute reachable states and check out-of-bounds constraint
-        p_bins[:,k], s_reach_k = compute_p_reachable(pomdp, p_bins[:,k], s[k])
+        p_bins[:,k], s_reach_k = compute_p_reachable(pomdp, p_bins[:,k], s.val[k])
 
         push!(s_reach, s_reach_k)
 
@@ -114,6 +114,11 @@ function POMDPs.transition(pomdp::ConnectPOMDP, s::Tuple, a::Tuple)
     end
 
     return POMDPModelTools.SparseCat(p_state, p_joint)
+end
+
+
+function POMDPs.transition(pomdp::ConnectPOMDP, s::Tuple, a::Tuple)
+    return POMDPs.transition(pomdp, Deterministic(s), a)
 end
 
 """

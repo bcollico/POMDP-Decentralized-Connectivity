@@ -1,5 +1,5 @@
 using POMDPs
-# using POMDPModelTools
+using POMDPModelTools
 
 include("params.jl")
 
@@ -18,7 +18,7 @@ function POMDPs.initialstate_distribution(pomdp::ConnectPOMDP)
     # print("Initial State Type: ")
     # println(typeof(pomdp.init_states))
     # println(pomdp.init_states)
-    return pomdp.init_states
+    return Deterministic(pomdp.init_states)
 
 end
 

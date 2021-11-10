@@ -1,4 +1,5 @@
 using POMDPs
+using POMDPModelTools
 
 include("./params.jl")
 include("./states.jl")
@@ -25,7 +26,7 @@ input
 output
     𝒪       Array of vectors of observation distributions
 """
-function POMDPs.observation(pomdp::ConnectPOMDP, a::Tuple, s::Tuple)
+function POMDPs.observation(pomdp::ConnectPOMDP, a::Tuple, s::Deterministic)
     # Total Number of Decision-Raking Robots
     num_bots = pomdp.num_agents + pomdp.num_leaders
 
@@ -38,7 +39,11 @@ function POMDPs.observation(pomdp::ConnectPOMDP, a::Tuple, s::Tuple)
     #    push!(𝒪, compute_observations(pomdp, num_bots, a_ind, s, 𝒮[1]))
     #end
 
-    return compute_observations(pomdp, num_bots, s)
+    return compute_observations(pomdp, num_bots, s.val)
+end
+
+function POMDPs.observation(pomdp::ConnectPOMDP, a::Tuple, s::Tuple)
+    return POMDPs.observation(pomdp, a, Deterministic(s))
 end
 
 """
