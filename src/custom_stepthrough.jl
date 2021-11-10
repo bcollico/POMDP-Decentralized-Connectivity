@@ -39,4 +39,4 @@ connect_pomdp = ConnectPOMDP(p)
 rand_policy = RandomPolicy(connect_pomdp)
 
 num_steps = 6
-run_custom_stepthrough(connect_pomdp, rand_policy, num_steps)
+run_custom_stepthrough(connect_pomdp, rand_policy, num_steps, false)
