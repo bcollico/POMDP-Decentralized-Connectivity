@@ -41,7 +41,7 @@ Include the obstacles in the grid.
 ### Outputs:
 - None, in-place
 """
-function add_obstacles_to_grid!(base_grid, obstacles_map::map)
+function add_obstacles_to_grid!(base_grid, obstacles_map::Map)
     # Now place the obstacles
     for obstacle_location in obstacles_map.obstacleLocations
         base_grid[obstacle_location] = -2
@@ -188,7 +188,7 @@ Plot the grid world with obstacles and agent/leader states.
 Note that many parameters are "hard-coded" for plotting. A future implementation
 can clean this up.
 """
-function multiagent_grid_world_plot(n_grid_size::Int, obstacles_map::map, 
+function multiagent_grid_world_plot(n_grid_size::Int, obstacles_map::Map, 
                                     s::Array{CartesianIndex{2}, 1}, 
                                     num_agents::Int, num_leaders::Int)
     base_grid = get_base_grid(n_grid_size)
@@ -204,8 +204,8 @@ function multiagent_grid_world_plot(n_grid_size::Int, obstacles_map::map,
             legend = :outertopright, #, markerstrokewidth=0.0) 
             margin = 8Plots.mm,
             color_palette = palette([:white, :orange, :green, :black], 4),
-            xlim = (0.5, 0.5 + n), ylim = (0.5, 0.5 + n),
-            xticks = 1:n, yticks = 1:n,
+            xlim = (0.5, 0.5 + n_grid_size), ylim = (0.5, 0.5 + n_grid_size),
+            xticks = 1:n_grid_size, yticks = 1:n_grid_size,
             xlabel = "X", ylabel = "Y", title = "Multi Agent Grid World")
     
     return fig, base_grid
@@ -221,20 +221,20 @@ See `multiagent_grid_world_plot(n_grid_size::Int, obstacles_map::map,
 s::Array{CartesianIndex{2}, 1}, num_agents::Int, num_leaders::Int)` for full 
 details.
 """
-function multiagent_grid_world_plot(params::ParamsStruct, obstacles_map::map, 
+function multiagent_grid_world_plot(params::ParamsStruct, obstacles_map::Map, 
     s::Array{CartesianIndex{2}, 1})
     return multiagent_grid_world_plot(params.n_grid_size, obstacles_map,
                                     s, params.num_agents, params.num_leaders)
 end
 
-function multiagent_grid_world_plot(n_grid_size::Int, obstacles_map::map, 
+function multiagent_grid_world_plot(n_grid_size::Int, obstacles_map::Map, 
                                     s::Tuple, 
                                     num_agents::Int, num_leaders::Int)
     return multiagent_grid_world_plot(n_grid_size, obstacles_map, [s...],
                                     num_agents, num_leaders)
 end
 
-function multiagent_grid_world_plot(params::ParamsStruct, obstacles_map::map, 
+function multiagent_grid_world_plot(params::ParamsStruct, obstacles_map::Map, 
     s::Tuple)
     return multiagent_grid_world_plot(params.n_grid_size, obstacles_map,
                                 [s...], params.num_agents, params.num_leaders)

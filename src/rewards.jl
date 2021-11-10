@@ -14,7 +14,8 @@ include("compute_connectivity.jl")
 function POMDPs.reward(pomdp::ConnectPOMDP, s_tot::Tuple, a::Tuple)
     num_agents = pomdp.num_agents
     num_leaders = pomdp.num_leaders
-    num_obstacles = length(pomdp.obstacles)
+    obstacle_arr = pomdp.obstacles.obstacleLocations
+    num_obstacles = length(obstacle_arr)
 
     alg_connect = compute_connectivity(s_tot, pomdp)
 
@@ -37,7 +38,7 @@ function POMDPs.reward(pomdp::ConnectPOMDP, s_tot::Tuple, a::Tuple)
     # compute obstacle collision reward
     for i in 1:num_agents+num_leaders
         for j in 1:num_obstacles
-            dist = maximum([s_tot[i][1]-pomdp.obstacles[j][1], s_tot[i][2]-pomdp.obstacles[j][2]])
+            dist = maximum([s_tot[i][1]-obstacle_arr[j][1], s_tot[i][2]-obstacle_arr[j][2]])
             if dist <= pomdp.object_collision_buffer
                 reward_obstacles += pomdp.R_o
             end

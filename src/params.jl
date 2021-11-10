@@ -4,14 +4,16 @@ using LinearAlgebra
 
 
 """
-    map
+    Map
 
-Store the map of the obstacle locations. Each obstacle is represented with a 
+Store the Map of the obstacle locations. Each obstacle is represented with a 
 CartesianIndex.
 """
-struct map
+struct Map
     obstacleLocations::Array{CartesianIndex}
 end
+
+# length(m::Map) = length(m.obstacleLocations)
 
 mutable struct ParamsStruct
     # Problem Setup
@@ -52,6 +54,9 @@ mutable struct ParamsStruct
     # Initial States
     init_states::Tuple
 
+    # Obstacles
+    obstacles_map::Map
+
     """Default constructor for ParamsStruct"""
     function ParamsStruct()
         return new(1, 1, 10,        # Problem Setup
@@ -62,7 +67,8 @@ mutable struct ParamsStruct
                   1.0, 1.0,         # Transition probability distribution
                   2, 2,             # Collision Buffer Distance
                   0.95, 0.50,       # Learning Parameters
-                  (CartesianIndex(2, 2), CartesianIndex(6, 4))   # Initial States
+                  (CartesianIndex(2, 2), CartesianIndex(6, 4)), # Initial States
+                  Map([CartesianIndex(1,1)])
         )
     end
 end
@@ -100,7 +106,7 @@ struct ConnectPOMDP <: POMDP{Tuple, Tuple, Tuple}
     init_states::Tuple
 
     # Obstacles
-    obstacles::Array
+    obstacles::Map
 
     """Constructor for ConnectPOMDP based on ParamsStruct"""
     function ConnectPOMDP(params::ParamsStruct)
@@ -117,15 +123,12 @@ struct ConnectPOMDP <: POMDP{Tuple, Tuple, Tuple}
         # compute lookup table for state transitions
         sp_order_table = compute_sp_order_table()
 
-        # generate obstacles
-        obstacles = [CartesianIndex(1,1)]
-
         return new(params.num_agents, params.num_leaders, params.n_grid_size, 
                    params.R_o, params.R_a, params.R_λ, 
                    p_bins_observation, trunc_normal, 
                    p_bins_follower, p_bins_leader, sp_order_table,
                    params.object_collision_buffer, params.agent_collision_buffer, 
-                   params.γ, params.init_states, obstacles)
+                   params.γ, params.init_states, params.obstacles_map)
     end
 end
 

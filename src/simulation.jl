@@ -21,6 +21,10 @@ println("Check Transition")
 t_first = POMDPs.transition(connect_pomdp, s_first, a_rand_first)
 println(t_first)
 
+println("Check Observation")
+o_first = POMDPs.observation(connect_pomdp, a_rand_first, s_first)
+println(o_first)
+
 for (s, a, r) in stepthrough(connect_pomdp, rand_policy, "s,a,r", max_steps=10)
     @show s
     @show a

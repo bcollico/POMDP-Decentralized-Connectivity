@@ -11,7 +11,7 @@ n_agents = 4
 n_leaders = 2
 
 ob_arr = gen_multiple_rand_obstacles(n_obs, n)
-ob_map = map(ob_arr)
+ob_map = Map(ob_arr)
 # base_map = get_base_grid(n)
 # add_obstacles_to_grid!(base_map, ob_map)
 
