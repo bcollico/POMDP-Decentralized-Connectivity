@@ -63,7 +63,7 @@ mutable struct ParamsStruct
                   10, 2, 1,         # Map Parameters
                  -1e4, -1e4, -1e3,  # Rewards
                   1e-10, 1.0,       # Sensing Uncertainty
-                  1.0, 2,           # Connectivity Probability Distribution
+                  1.0, 4,           # Connectivity Probability Distribution
                   1.0, 1.0,         # Transition probability distribution
                   2, 1,             # Collision Buffer Distance
                   0.95, 0.50,       # Learning Parameters
