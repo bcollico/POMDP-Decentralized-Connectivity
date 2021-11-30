@@ -65,9 +65,9 @@ mutable struct ParamsStruct
                   1e-10, 1.0,       # Sensing Uncertainty
                   1.0, 2,           # Connectivity Probability Distribution
                   1.0, 1.0,         # Transition probability distribution
-                  2, 2,             # Collision Buffer Distance
+                  2, 1,             # Collision Buffer Distance
                   0.95, 0.50,       # Learning Parameters
-                  (CartesianIndex(2, 2), CartesianIndex(6, 4)), # Initial States
+                  (CartesianIndex(8, 2), CartesianIndex(6, 4)), # Initial States
                   Map([CartesianIndex(1,1)])
         )
     end
