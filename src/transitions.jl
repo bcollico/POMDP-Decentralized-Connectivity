@@ -64,7 +64,7 @@ function POMDPs.transition(pomdp::ConnectPOMDP, s::Deterministic, a::Tuple)
     num_bots = pomdp.num_agents + pomdp.num_leaders
 
     # get action index to determine the most likely transition
-    a_ind = POMDPs.actionindex(pomdp, a)
+    a_ind = action_index_list(pomdp, a)
 
     p_bins = zeros(9, num_bots)
     s_reach = []

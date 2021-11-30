@@ -132,6 +132,12 @@ struct ConnectPOMDP <: POMDP{Tuple, Tuple, Tuple}
     end
 end
 
+
+function POMDPs.discount(pomdp::ConnectPOMDP)
+    return pomdp.γ
+end
+
+
 function compute_discrete_gaussian(σ::Float64, b::Float64)
     # TODO: Generalize to different numbers of actions
     n_actions = 9

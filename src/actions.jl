@@ -43,6 +43,19 @@ Determine the linear index of the actions taken by each agent.
 - a_ind     -- Array of linear indices for each agents' action
 """
 function POMDPs.actionindex(pomdp::ConnectPOMDP, a::Tuple)
+    # Total Number of Decision-Raking Robots
+    num_bots = pomdp.num_agents + pomdp.num_leaders
+
+    a_ind = action_index_list(pomdp, a)
+
+    # Outer dimension is (n x n)^(num_bots)
+    outer_bot_num_dimension = Tuple([9 for bot in 1:num_bots])
+
+    return LinearIndices(outer_bot_num_dimension)[a_ind...]
+end
+
+
+function action_index_list(pomdp::ConnectPOMDP, a::Tuple)
     # The Grid Size (i.e., n_grid_size x n_grid_size)
     n_grid_size = pomdp.n_grid_size
 
