@@ -21,7 +21,7 @@ connect_pomdp = ConnectPOMDP(p)
 if run_solver_from_scratch
     # key-word args are the maximum number of iterations the solver will run for, and the Bellman tolerance
     println("Instantiating the solver")
-    solver = QMDPSolver(SparseValueIterationSolver(max_iterations=2, verbose=true))
+    solver = QMDPSolver(SparseValueIterationSolver(max_iterations=20, verbose=true))
     # solver = FIBSolver(verbose=true)
 
     # run the solver
