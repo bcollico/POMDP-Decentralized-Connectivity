@@ -64,13 +64,13 @@ Include the robots in the grid.
 function add_bots_to_grid!(base_grid, s::Array{CartesianIndex{2}, 1}, 
                             num_agents::Int, num_leaders::Int)
     # Now place the agents
-    for agent_ind in 1:num_agents
+    for agent_ind in 1:num_leaders
         agent_location = s[agent_ind]
         base_grid[agent_location] = 1
     end
 
     # Now place the leaders
-    for leader_ind in 1:num_leaders
+    for leader_ind in 1:num_agents
         leader_location = s[leader_ind + num_agents]
         base_grid[leader_location] = 2
     end
@@ -238,4 +238,9 @@ function multiagent_grid_world_plot(params::ParamsStruct, obstacles_map::Map,
     s::Tuple)
     return multiagent_grid_world_plot(params.n_grid_size, obstacles_map,
                                 [s...], params.num_agents, params.num_leaders)
+end
+
+function multiagent_grid_world_plot(pomdp::ConnectPOMDP, s::Tuple)
+    return multiagent_grid_world_plot(pomdp.n_grid_size, pomdp.obstacles,
+    [s...], pomdp.num_agents, pomdp.num_leaders)
 end

@@ -25,7 +25,7 @@ function POMDPs.reward(pomdp::ConnectPOMDP, s_tot::Tuple, a::Tuple)
 
     # compute agent collision reward
     for i in 1:num_agents+num_leaders
-        for j in 1:num_agents+num_leaders
+        for j in i:num_agents+num_leaders
             if j!=i
                 dist = maximum(abs.([s_tot[i][1]-s_tot[j][1], s_tot[i][2]-s_tot[j][2]]))
                 # println("dist = $(dist)")

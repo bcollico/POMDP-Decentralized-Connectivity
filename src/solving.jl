@@ -29,7 +29,7 @@ if run_solver_from_scratch
     policy = solve(solver, connect_pomdp)
 
     # save the policy
-    save("qmdp_policy.jld2", "policy.jl", policy)
+    save("qmdp_policy.jld2", "policy", policy)
 else
     # loading policy
     println("loading policy")
