@@ -63,17 +63,19 @@ Include the robots in the grid.
 """
 function add_bots_to_grid!(base_grid, s::Array{CartesianIndex{2}, 1}, 
                             num_agents::Int, num_leaders::Int)
+    
+    # Now place the leaders
+    for leader_ind in 1:num_leaders
+        leader_location = s[leader_ind]
+        base_grid[leader_location] = 2
+    end
+    
     # Now place the agents
-    for agent_ind in 1:num_leaders
-        agent_location = s[agent_ind]
+    for agent_ind in 1:num_agents
+        agent_location = s[num_leaders + agent_ind]
         base_grid[agent_location] = 1
     end
 
-    # Now place the leaders
-    for leader_ind in 1:num_agents
-        leader_location = s[leader_ind + num_agents]
-        base_grid[leader_location] = 2
-    end
 end
 
 """
