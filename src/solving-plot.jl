@@ -48,7 +48,7 @@ for row in 1:connect_pomdp.n_grid_size
 end
 
 println("Determined U. Generating heatmap")
-fig = heatmap(U, margin=`10mm`)
+fig = heatmap(U, margin=8Plots.mm)
 # display(fig)
 
 function map_named_to_letters(a)
