@@ -16,7 +16,8 @@ using LinearAlgebra
 function compute_connectivity(s_tot::Tuple, pomdp::ConnectPOMDP)
 
     # number of agents
-    n = pomdp.num_agents + pomdp.num_leaders
+    #n = pomdp.num_agents + pomdp.num_leaders
+    n = length(s_tot)
     
     adjacency_matrix = zeros((n,n))
     degree_matrix = zeros((n,n))
