@@ -34,13 +34,21 @@ connect_pomdp = policy.pomdp
 
 s = POMDPs.initialstate_distribution(policy.pomdp)
 
+updater_ = updater(policy)
+b_array = []
+for i = connect_pomdp.num_agents
+    push!(b_array, initialize_belief(updater_, s))
+end
+
+
 for _ in 1:10
     global s
+    global b_array
     println("currently at $(rand(s))")
-    fig, base_grid = multiagent_grid_world_plot(policy.pomdp, rand(s))
-    println("Generated figure, now displaying the figure.")
-    display(fig)
+    #fig, base_grid = multiagent_grid_world_plot(policy.pomdp, rand(s))
+    #println("Generated figure, now displaying the figure.")
+    #display(fig)
 
-    s, r, λ = our_simulate(policy, s, :stay)
+    s, r, λ, b_array = our_simulate(policy, s, :stay, b_array)
     println("r = $(r), λ = $(λ)")
 end

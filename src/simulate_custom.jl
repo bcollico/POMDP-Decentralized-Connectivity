@@ -5,7 +5,9 @@ using POMDPModelTools
 include("aa228_final_project.jl")
 include("compute_connectivity.jl")
 
-function our_simulate(policy, current_states, leader_action)
+function our_simulate(policy, current_states, leader_action, belief_array)
+    updater_ = updater(policy)
+
     # Get the POMDP
     pomdp = policy.pomdp
     n = pomdp.n_grid_size
@@ -15,34 +17,67 @@ function our_simulate(policy, current_states, leader_action)
     #actions = action(policy, current_states)
     actions = tuple()
     current_state_observation = tuple()
+
+    # Get global observation distribution
     observation_dist = POMDPs.observation(pomdp, actions, current_states)
-    for i in (pomdp.num_leaders+1):(pomdp.num_leaders+pomdp.num_agents)
+
+    num_bots = pomdp.num_leaders+pomdp.num_agents
+    observed_state_i_array = []
+
+    for i in (pomdp.num_leaders+1):num_bots
+        # Initialize tuple to store current agent's observation of other agent states
         current_state_observation = tuple()
+
+        belief_i = belief_array[i-pomdp.num_leaders]
+
+        # Actualize the observation from the global observation distribution
         observation = rand(observation_dist)
+
+        # Iterate through observed agents to check connectivity
         for j in 1:length(observation)
+            
+            # Tuple of states for agents i and j, check connectivity
             state_pair = (rand(current_states)[i], rand(current_states)[j])
-            # If there is no connectivity between agents, produce random observation
+
+            # If there is no connectivity between agents, produce observation from adjacent states
             if i != j && compute_connectivity(state_pair, pomdp) == 0
+                # Compute states adjacent to Agent j
                 j_reach = compute_reachable_states(state_pair[2])
+
+                # Create Uniform Categorical Distribution over j's adjacent states
                 j_dist = SparseCat(j_reach, ones(length(j_reach))/length(j_reach))
+
+                # Actualize a state observation for the current robot
                 current_state_j = rand(j_dist)
                 while current_state_j ∉ 𝒮
-                    # resample if state isn't on board
+                    # Resample if state isn't on board (e.g. (-1, 1) )
                     current_state_j = rand(j_dist)
                 end
-                #current_state_j = CartesianIndex(Int(ceil(rand()*n)), Int(ceil(rand()*n)))
-
             else
+                # If there is connectivity then keep the actualized observation
                 current_state_j = observation[j]
             end
+            # Add Agent i's observation of Agent j to the current observation tuple
             current_state_observation = (current_state_observation[:]..., current_state_j)
         end
-        println("current state belief: $(current_state_observation)")
-        current_state_observation = Deterministic(current_state_observation)
-        action_i = action(policy, current_state_observation)[i]
+
+        #println("current state belief: $(current_state_observation)")
+
+        push!(observed_state_i_array, Deterministic(current_state_observation))
+        #current_state_observation = Deterministic(current_state_observation)
+
+        # Obtain the action for Agent i based on it's observation
+        action_i = action(policy, observed_state_i_array[i-pomdp.num_leaders])[i]
+
+        # Add Agent i's observation to the global action tuple
         actions = (actions, action_i)
     end
     actions = (leader_action, actions[2:end]...)
+
+    for i in (pomdp.num_leaders+1):num_bots
+        println("current observation: $(observed_state_i_array[i-pomdp.num_leaders])")
+        belief_array[i-pomdp.num_leaders] = update(updater_, belief_array[i-pomdp.num_leaders], actions, observed_state_i_array[i-pomdp.num_leaders])
+    end
 
     # Compute Connectivity and rewards
     s = rand(current_states)
@@ -56,6 +91,6 @@ function our_simulate(policy, current_states, leader_action)
     # print("New states: ")
     # println(new_states)
 
-    return new_states, r, λ
+    return new_states, r, λ, belief
 
 end
