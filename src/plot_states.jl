@@ -200,26 +200,27 @@ function multiagent_grid_world_plot(n_grid_size::Int, obstacles_map::Map,
 
     xs, ys, categories = get_categorical_representation(base_grid)
 
-    # fig = plot(xs, ys, group = categories, 
-    #         seriestype = :scatter, # aspect_ratio = :equal,
-    #         markersize = 14, markershape = :square,
-    #         legend = :outertopright, #, markerstrokewidth=0.0) 
-    #         margin = 8Plots.mm,
-    #         color_palette = palette([:white, :orange, :green, :black], 4),
-    #         xlim = (0.5, 0.5 + n_grid_size), ylim = (0.5, 0.5 + n_grid_size),
-    #         xticks = 1:n_grid_size, yticks = 1:n_grid_size,
-    #         xlabel = "X", ylabel = "Y", title = "Multi Agent Grid World")
-
     fig = plot(xs, ys, group = categories, 
             seriestype = :scatter, # aspect_ratio = :equal,
-            markersize = 3.5, markershape = :square,
-            legend = :outertopright, markerstrokewidth=0.0, 
+            markersize = 14, markershape = :square,
+            legend = :outertopright, #, markerstrokewidth=0.0) 
             margin = 8Plots.mm,
             color_palette = palette([:white, :orange, :green, :black], 4),
             xlim = (0.5, 0.5 + n_grid_size), ylim = (0.5, 0.5 + n_grid_size),
-            xticks = 0:10:n_grid_size, yticks = 0:10:n_grid_size,
-            xlabel = "X", ylabel = "Y", title = "Multi Agent Grid World", 
-            dpi=600, framestyle = :box)
+            xticks = 1:n_grid_size, yticks = 1:n_grid_size,
+            xlabel = "X", ylabel = "Y", title = "Multi Agent Grid World")
+
+    
+    # fig = plot(xs, ys, group = categories, 
+    #         seriestype = :scatter, # aspect_ratio = :equal,
+    #         markersize = 3.5, markershape = :square,
+    #         legend = :outertopright, markerstrokewidth=0.0, 
+    #         margin = 8Plots.mm,
+    #         color_palette = palette([:white, :orange, :green, :black], 4),
+    #         xlim = (0.5, 0.5 + n_grid_size), ylim = (0.5, 0.5 + n_grid_size),
+    #         xticks = 0:10:n_grid_size, yticks = 0:10:n_grid_size,
+    #         xlabel = "X", ylabel = "Y", title = "Multi Agent Grid World", 
+    #         dpi=600, framestyle = :box)
     
     return fig, base_grid
 end
