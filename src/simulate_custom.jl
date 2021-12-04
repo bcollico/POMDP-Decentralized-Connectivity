@@ -66,6 +66,7 @@ function our_simulate(policy, updater_, current_states, leader_action, belief_ar
     println("transitioned to $(sp)")
 
     # (3) realize an observation given s' and actions
+    # Would use believed actions in true decentralized
     o = rand(POMDPs.observation(pomdp, joint_actions, sp))
 
     for i in 1:pomdp.num_agents
