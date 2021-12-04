@@ -79,7 +79,8 @@ function our_simulate(policy, updater_, current_states, leader_action, belief_ar
 
         # error("Stop")
 
-        bp = initialize_belief(updater_, Deterministic(sp)) # update(updater_, belief_array[i], actions_believed[i], o)
+        # bp = initialize_belief(updater_, Deterministic(sp)) 
+        bp = update(updater_, belief_array[i], actions_believed[i], o)
         println("Agent belief is $(agent_belief(pomdp, bp))")
         push!(belief_state_i_array, bp)
     end
@@ -93,6 +94,64 @@ function our_simulate(policy, updater_, current_states, leader_action, belief_ar
     
 end
 
+
+function our_simulate_random(policy, pomdp, updater_, current_states, leader_action, belief_array)
+    # pomdp = policy.pomdp
+
+    # num_bots = pomdp.num_leaders+pomdp.num_agents
+    belief_state_i_array = []
+
+    actions_arr = [leader_action]
+    actions_believed = []
+
+    for i in 1:pomdp.num_agents
+        belief_i = belief_array[i]
+
+        # (1) compute actions contingent on the leader action
+        actions = action(policy, belief_i) # compute_contingent_policy(policy, leader_action, belief_i)
+        println("actions = $(actions)")
+
+        push!(actions_arr, actions[i + pomdp.num_leaders])
+        push!(actions_believed, actions)
+    end
+
+    joint_actions = Tuple(actions_arr)
+
+    # (2) transition the true state to s'
+    println("Computing T($(current_states), $(joint_actions))")
+    td = POMDPs.transition(pomdp, current_states, joint_actions)
+    # display(td)
+    sp = rand(td)
+    println("transitioned to $(sp)")
+
+    # (3) realize an observation given s' and actions
+    o = rand(POMDPs.observation(pomdp, joint_actions, sp))
+
+    for i in 1:pomdp.num_agents
+        # println("observed $(o)")
+
+        # (4) update the belief with our prior, the actions, and the observations
+        ow = obs_weight(pomdp, current_states, actions_believed[i], sp, o)
+        # println("Observation weight = $(ow)")
+
+        # println("Agent belief is $(agent_belief(pomdp, belief_array[i]))")
+
+        # error("Stop")
+
+        bp = initialize_belief(updater_, Deterministic(sp)) 
+        # bp = update(updater_, belief_array[i], actions_believed[i], o)
+        println("Agent belief is $(agent_belief(pomdp, bp))")
+        push!(belief_state_i_array, bp)
+    end
+
+    # (5) compute the rewards
+    r = POMDPs.reward(pomdp, sp, joint_actions)
+    λ = compute_connectivity(sp, pomdp)
+
+    # (6) return the updated belief and the true new state
+    return belief_state_i_array, sp, r, λ
+    
+end
 
 # function our_simulate(policy, current_states, past_actions, belief_array)
 #     updater_ = updater(policy)

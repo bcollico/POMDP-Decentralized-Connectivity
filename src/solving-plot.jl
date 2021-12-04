@@ -15,7 +15,8 @@ gr()
 # Initialize the default parameters and make a POMDP from it
 println("Instantiating the POMDP")
 
-policy = load("qmdp_policy.jld2", "policy.jl")
+# policy = load("qmdp_policy.jld2", "policy.jl")
+policy = load("qmdp_policy_pomdp.jld2", "policy")
 connect_pomdp = policy.pomdp
 
 # For the initial state distribution

@@ -30,6 +30,7 @@ function POMDPs.reward(pomdp::ConnectPOMDP, s_tot::Tuple, a::Tuple)
                 dist = maximum(abs.([s_tot[i][1]-s_tot[j][1], s_tot[i][2]-s_tot[j][2]]))
                 # println("dist = $(dist)")
                 if dist <= pomdp.agent_collision_buffer
+                    println("###### agent $(i) at $(s_tot[i]) collided with agent $(j) at $(s_tot[j]). dist = $(dist)")
                     reward_collisions += pomdp.R_a
                 end
             end
@@ -41,6 +42,7 @@ function POMDPs.reward(pomdp::ConnectPOMDP, s_tot::Tuple, a::Tuple)
         for j in 1:num_obstacles
             dist = maximum(abs.([s_tot[i][1]-obstacle_arr[j][1], s_tot[i][2]-obstacle_arr[j][2]]))
             if dist <= pomdp.object_collision_buffer
+                println("###### agent $(i) at $(s_tot[i]) collided with obstacle at $(obstacle_arr[j]). dist = $(dist)")
                 reward_obstacles += pomdp.R_o
             end
         end
