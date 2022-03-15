@@ -1,11 +1,13 @@
 ## AA228: Decision Making Under Uncertainty
+A Julia implmentation of decentralized connectivity maintenance as a sequential decision-making problem.
+
 Programmers: [Bradley Collicott](https://github.com/bcollico), [Daniel Neamati](https://github.com/danineamati), [Alexandros Tzikas](https://github.com/alextzik)
 
 A full project report is available at: [AA228_FinalReport.pdf](./output/AA228_Project.pdf)
 ## Final Project: Multi-Agent Decentralized Connectivity Maintenance Learning
-This project implements decentralized connectivity maintainence for a two-agent system, represented as a partially-observable sequential decision-making problem (POMDP) in the Julia programming language. The objective was to learn a control policy that avoids collision with obstacles and other agents while maintaining connectivity with the leader robot. The POMDP is structured on a discrete, 2D grid world with discrete state, action, and observation spaces. The policy was first trained in a cnetralized manner using the QMDP algorithm, and rolled out decentralized on each agent.
+This project implements decentralized connectivity maintainence for a two-agent system, represented as a partially-observable markov decision process (POMDP) in the Julia programming language. The objective was to learn a control policy that avoids collision with obstacles and other agents while maintaining connectivity with the leader robot. The POMDP is structured on a discrete, 2D grid world with discrete state, action, and observation spaces. The policy was first trained in a cnetralized manner using the QMDP algorithm, and rolled out decentralized on each agent.
 
-This problem takes into account uncertainty in motion (process noise) and sensing (observation noise).
+Our implementation addresses both account uncertainty in motion (process noise) and sensing (observation noise).
 
 ### Results
 The learned policy is visualized below for a stationary leader at different positions in the grid world. It is shown that that follower agent chooses to avoid collisions while maintaining a safe distance from the leader for connectivity.
