@@ -15,7 +15,7 @@ The learned policy is visualized below for a stationary leader at different posi
      <img src="./output/policy-plot-stationary-log-heat-border-equal-Arrows-(5-5).png" height="300"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="./output/policy-plot-stationary-log-heat-border-equal-Arrows-(9-9).png" height="300"/> 
 </p>
 
-We show that the learned policy avoids collisions and maintains connectivity at nearly all times. A baseline comparision to a random policy shows that the POMDP representation leads to a significant performance improvement.
+We show that the learned policy avoids collisions and maintains connectivity at nearly all times. A baseline comparison to a random policy shows that the POMDP representation leads to a significant performance improvement.
 
 <p align="center">
      <img src="./output/results_table.PNG" height="150"/>
