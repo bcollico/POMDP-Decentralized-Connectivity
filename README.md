@@ -7,7 +7,7 @@ A full project report is available at: [AA228_FinalReport.pdf](./output/AA228_Pr
 ## Final Project: Multi-Agent Decentralized Connectivity Maintenance Learning
 This project implements decentralized connectivity maintenance for a two-agent system, represented as a partially-observable markov decision process (POMDP) in the Julia programming language. The objective was to learn a control policy that avoids collision with obstacles and other agents while maintaining connectivity with the leader robot. The POMDP is structured on a discrete, 2D grid world with discrete state, action, and observation spaces. The policy was first trained in a cnetralized manner using the QMDP algorithm, and rolled out decentralized on each agent.
 
-Our implementation addresses both account uncertainty in motion (process noise) and sensing (observation noise).
+Our implementation addresses both uncertainty in motion (process noise) and sensing (observation noise).
 
 ### Results
 The learned policy is visualized below for a stationary leader at different positions in the grid world. It is shown that that follower agent chooses to avoid collisions while maintaining a safe distance from the leader for connectivity.
